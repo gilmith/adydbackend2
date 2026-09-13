@@ -1,0 +1,57 @@
+@startuml dependencies
+title Dependencias entre Libreria de Dominio y Libreria de Base de Datos (DAO)
+
+package "adyd-domain.jar" as domain {
+    package "model" {
+        class Campaign
+        class PlayerClass
+        class BaseModel <<abstract>>
+    }
+    package "repository" {
+        interface CampaignRepository <<port>>
+        interface PlayerClassRepository <<port>>
+    }
+}
+
+package "dao.jar" as dao {
+    package "entities" {
+        class CampaignEntity
+        class PlayerClassEntity
+    }
+    package "persistence" {
+        interface CampaignJpaRepository <<Spring Data>>
+        interface PlayerClassJpaRepository <<Spring Data>>
+    }
+    package "mapper" {
+        class CampaignMapper
+        class PlayerClassMapper
+    }
+    package "adapter" {
+        class CampaignRepositoryAdapter
+        class PlayerClassRepositoryAdapter
+    }
+}
+
+' --- Direccion de dependencia global ---
+dao ..> domain : depende
+
+' --- Capa de infraestructura interna ---
+CampaignRepositoryAdapter .up.|> CampaignRepository : implements
+PlayerClassRepositoryAdapter .up.|> PlayerClassRepository : implements
+CampaignRepositoryAdapter --> CampaignJpaRepository
+PlayerClassRepositoryAdapter --> PlayerClassJpaRepository
+CampaignJpaRepository --> CampaignEntity
+PlayerClassJpaRepository --> PlayerClassEntity
+
+' --- Mappers (en DAO) usan el modelo del dominio ---
+CampaignRepositoryAdapter --> CampaignMapper
+PlayerClassRepositoryAdapter --> PlayerClassMapper
+CampaignMapper --> Campaign
+CampaignMapper --> CampaignEntity
+PlayerClassMapper --> PlayerClass
+PlayerClassMapper --> PlayerClassEntity
+
+' --- La libreria de dominio NO depende de nada externo ---
+domain ..> Campaign : pure Java, sin Spring/JPA
+
+@enduml
