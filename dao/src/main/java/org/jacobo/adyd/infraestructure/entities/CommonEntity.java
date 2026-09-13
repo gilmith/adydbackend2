@@ -16,6 +16,7 @@ public class CommonEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(allocationSize = 1)
     private Long id;
 
     @Column(name = "create_date")

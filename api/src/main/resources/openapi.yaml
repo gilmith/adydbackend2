@@ -1,0 +1,152 @@
+openapi: 3.1.0
+info:
+  title: adyd_openapi
+  description: open api adyd
+  version: 1.0.0
+servers:
+  - url: 'https'
+paths:
+  /campaign:
+    get:
+      summary: Get all campaigns
+      operationId: getAllCampaign
+      tags:
+        - campaign-controller
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CampaignDto'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorDto'
+    post:
+      summary: create new campaign
+      operationId: createCampaign
+      tags:
+        - campaign-controller
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CampaignDto'
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignDto'
+  /campaign/{campaignId}:
+    get:
+      summary: get campaign by id
+      operationId: getCampaignById
+      tags:
+        - campaign-controller
+      parameters:
+        - name: campaignId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignDto'
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundDto'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorDto'
+    patch:
+      summary: update campaign
+      operationId: updateCampaign
+      tags:
+        - campaign-controller
+      parameters:
+        - name: campaignId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CampaignDto'
+      responses:
+        202:
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignDto'
+  /campaign/{campaignId}/race:
+    get:
+      summary: get all available races for campaign
+      operationId: getRaceByCampaignId
+      tags:
+        - campaign-controller
+      parameters:
+        - name: campaignId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RaceDto'
+components:
+  schemas:
+    RaceDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+    CampaignDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+    NotFoundDto:
+      type: object
+      properties:
+        message:
+          type: string
+    InternalServerErrorDto:
+      type: object
+      properties:
+        message:
+          type: string

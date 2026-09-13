@@ -9,6 +9,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class CampaignModel extends BaseModel{
-
     private String name;
 }

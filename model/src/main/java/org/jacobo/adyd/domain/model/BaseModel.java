@@ -11,8 +11,8 @@ import lombok.Setter;
 public class BaseModel {
 
     private Long id;
-    private LocalDateTime create_date;
+    private LocalDateTime createDate;
     private String createUser;
-    private LocalDateTime update_date;
+    private LocalDateTime updateDate;
     private String updateUser;
 }

@@ -34,7 +34,7 @@ public class CampaignRepositoryAdapter implements CampaignRepository {
     @Override
     @Transactional(readOnly = true)
     public List<CampaignModel> findAll() {
-        return jpaRepository.findAll().stream().map(campaignMapper::toDomain).toList();
+        return campaignMapper.toDomain(jpaRepository.findAll());
     }
 
     @Override
