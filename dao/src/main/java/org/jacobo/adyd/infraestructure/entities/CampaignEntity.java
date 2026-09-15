@@ -1,15 +1,15 @@
 package org.jacobo.adyd.infraestructure.entities;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.Set;
 
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "campaign")
-@Getter
-@Setter
+@Data
 public class CampaignEntity extends CommonEntity {
 
     @Column(name = "name")

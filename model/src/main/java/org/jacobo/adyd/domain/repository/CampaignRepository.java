@@ -1,6 +1,7 @@
 package org.jacobo.adyd.domain.repository;
 
 import org.jacobo.adyd.domain.model.CampaignModel;
+import org.jacobo.adyd.domain.model.CampaignRaceModel;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,4 +19,6 @@ public interface CampaignRepository {
     boolean existsById(Long id);
 
     long count();
+
+    Optional<CampaignRaceModel> findAllRacesByCampaignId(Long campaignId);
 }

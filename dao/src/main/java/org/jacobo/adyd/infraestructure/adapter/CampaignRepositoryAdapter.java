@@ -1,15 +1,22 @@
 package org.jacobo.adyd.infraestructure.adapter;
 
 import lombok.RequiredArgsConstructor;
+import lombok.val;
 import org.jacobo.adyd.domain.model.CampaignModel;
+import org.jacobo.adyd.domain.model.CampaignRaceModel;
+import org.jacobo.adyd.domain.model.RaceModel;
 import org.jacobo.adyd.domain.repository.CampaignRepository;
+import org.jacobo.adyd.infraestructure.entities.RaceEntity;
 import org.jacobo.adyd.infraestructure.mapper.CampaignMapper;
 import org.jacobo.adyd.infraestructure.persistence.CampaignJpaRepository;
+import org.jacobo.adyd.infraestructure.projection.CampaignRaceProjection;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -26,32 +33,48 @@ public class CampaignRepositoryAdapter implements CampaignRepository {
 
 
     @Override
-    @Transactional(readOnly = true)
     public Optional<CampaignModel> findById(Long id) {
         return jpaRepository.findById(id).map(campaignMapper::toDomain);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<CampaignModel> findAll() {
         return campaignMapper.toDomain(jpaRepository.findAll());
     }
 
     @Override
-    @Transactional
     public void deleteById(Long id) {
         jpaRepository.deleteById(id);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public boolean existsById(Long id) {
         return jpaRepository.existsById(id);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public long count() {
         return jpaRepository.count();
     }
+
+    @Override
+    public Optional<CampaignRaceModel> findAllRacesByCampaignId(Long campaignId) {
+        List<CampaignRaceProjection> projections = jpaRepository.findAllRacesByCampaignId(campaignId);
+        if (projections.isEmpty()) {
+            return Optional.empty();
+        }
+        CampaignRaceModel campaignRace = new CampaignRaceModel();
+        campaignRace.setCampaignName(projections.getFirst().getCampaignName());
+        campaignRace.setRaces(projections.stream()
+                .map(it -> {
+                    val raceModel = new RaceModel();
+                    raceModel.setName(it.getRaceName());
+                    raceModel.setId(it.getRaceId());
+                    return raceModel;
+                })
+                .toList()
+        );
+        return Optional.of(campaignRace);
+    }
+
 }
