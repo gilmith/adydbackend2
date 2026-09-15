@@ -9,6 +9,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class RaceModel extends BaseModel{
 
+    private Long id;
     private String name;
 
 

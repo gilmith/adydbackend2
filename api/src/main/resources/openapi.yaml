@@ -121,11 +121,101 @@ paths:
           content:
             application/json:
               schema:
+                $ref: '#/components/schemas/CampaignRaceDto'
+  /campaign/{campaignId}/race/{raceId}:
+    post:
+      summary: add relation between race and campaign
+      operationId: addRaceInCampaign
+      tags:
+        - campaign-controller
+      parameters:
+        - name: campaignId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: raceId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        202:
+          description: accepted
+        404:
+          description: not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundDto'
+    delete:
+      summary: delete relation between race and campaign
+      operationId: deleteRaceInCampaign
+      tags:
+        - campaign-controller
+      parameters:
+        - name: campaignId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: raceId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        202:
+          description: accepted
+        404:
+          description: not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundDto'
+  /race:
+    get:
+      summary: get all races
+      operationId: getAllRaces
+      tags:
+        - race-controller
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RaceDto'
+    post:
+      summary: add new race
+      operationId: createNewRace
+      tags:
+        - race-controller
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RaceDto'
+      responses:
+        201:
+          description: created
+          content:
+            application/json:
+              schema:
                 $ref: '#/components/schemas/RaceDto'
 components:
   schemas:
     RaceDto:
       type: object
+      required:
+        - name
       properties:
         id:
           type: integer
@@ -134,12 +224,26 @@ components:
           type: string
     CampaignDto:
       type: object
+      required:
+        - name
       properties:
         id:
           type: integer
           format: int64
         name:
           type: string
+    CampaignRaceDto:
+      type: object
+      required:
+        - campaign
+        - races
+      properties:
+        campaign:
+          type: string
+        races:
+          type: array
+          items:
+            $ref: '#/components/schemas/RaceDto'
     NotFoundDto:
       type: object
       properties:
