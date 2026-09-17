@@ -2,9 +2,7 @@ package org.jacobo.adyd.infraestructure.adapter;
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import org.jacobo.adyd.domain.model.CampaignModel;
-import org.jacobo.adyd.domain.model.CampaignRaceModel;
-import org.jacobo.adyd.domain.model.RaceModel;
+import org.jacobo.adyd.domain.model.*;
 import org.jacobo.adyd.domain.repository.CampaignRepository;
 import org.jacobo.adyd.infraestructure.entities.RaceEntity;
 import org.jacobo.adyd.infraestructure.mapper.CampaignMapper;
@@ -75,6 +73,24 @@ public class CampaignRepositoryAdapter implements CampaignRepository {
                 .toList()
         );
         return Optional.of(campaignRace);
+    }
+
+    @Override
+    public Optional<CampaignPlayerClassModel> findPlayerClassForCampaign(Long campaignId) {
+        val projection = jpaRepository.findAllPlayerClassForCampaign(campaignId);
+        if (projection.isEmpty()) {
+            return Optional.empty();
+        }
+        val campaignPlayerClassModel = new CampaignPlayerClassModel();
+        campaignPlayerClassModel.setCampaign(projection.getFirst().getCampaignName());
+        val playerClass = projection.stream().map(it -> {
+            val playerClassModel = new PlayerClassModel();
+            playerClassModel.setName(it.getPlayerClassName());
+            playerClassModel.setId(it.getPlayerClassId());
+            return playerClassModel;
+        }).toList();
+        campaignPlayerClassModel.setPlayerClass(playerClass);
+        return Optional.of(campaignPlayerClassModel);
     }
 
 }

@@ -1,6 +1,7 @@
 package org.jacobo.adyd.domain.repository;
 
 import org.jacobo.adyd.domain.model.CampaignModel;
+import org.jacobo.adyd.domain.model.CampaignPlayerClassModel;
 import org.jacobo.adyd.domain.model.CampaignRaceModel;
 
 import java.util.List;
@@ -21,4 +22,6 @@ public interface CampaignRepository {
     long count();
 
     Optional<CampaignRaceModel> findAllRacesByCampaignId(Long campaignId);
+
+    Optional<CampaignPlayerClassModel> findPlayerClassForCampaign(Long campaignId);
 }

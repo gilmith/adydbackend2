@@ -2,15 +2,19 @@ package org.jacobo.adyd.infraestructure.entities;
 
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.util.Set;
 
+@EqualsAndHashCode(callSuper = true, exclude = "campaigns")
+@ToString(callSuper = true, exclude = "campaigns")
 @Entity
 @Table(name = "race")
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@SuperBuilder
 public class RaceEntity extends CommonEntity{
 
     @Column(name = "name")

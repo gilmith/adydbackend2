@@ -1,14 +1,16 @@
 package org.jacobo.adyd.domain.model;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
+@EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
 @Data
 @NoArgsConstructor
+@SuperBuilder
 public class PlayerClassModel extends BaseModel{
+    private Long id;
     private String name;
-    private String diceHit;
+    private String hitDice;
 }
