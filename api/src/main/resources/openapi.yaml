@@ -4,7 +4,7 @@ info:
   description: open api adyd
   version: 1.0.0
 servers:
-  - url: 'https'
+  - url: 'api'
 paths:
   /campaign:
     get:
@@ -122,6 +122,52 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CampaignRaceDto'
+  /campaign/{campaignId}/player-class:
+    get:
+      summary: get all available player classes for campaign
+      operationId: getPlayerClassForCampaign
+      tags:
+        - campaign-controller
+      parameters:
+        - name: campaignId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignPlayerClassDto'
+  /campaign/{campaignId}/player-class/{playerClassId}:
+    post:
+      summary: add relation between player class and campaign
+      operationId: addPlayerClassInCampaign
+      tags:
+        - campaign-controller
+      parameters:
+        - name: campaignId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: playerClassId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignPlayerClassDto'
   /campaign/{campaignId}/race/{raceId}:
     post:
       summary: add relation between race and campaign
@@ -210,8 +256,161 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RaceDto'
+  /race/{raceId}:
+    delete:
+      summary: delete race
+      operationId: deleteRace
+      tags:
+        - race-controller
+      parameters:
+        - name: raceId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        204:
+          description: No Content
+    patch:
+      summary: modify race
+      operationId: modifyRace
+      tags:
+        - race-controller
+      parameters:
+        - name: raceId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RaceDto'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RaceDto'
+        404:
+          description: Not found
+    get:
+      summary: get race by id
+      tags:
+        - race-controller
+      operationId: getRaceById
+      parameters:
+        - name: raceId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RaceDto'
+        404:
+          description: Not found
+  /player-class:
+    get:
+      summary: get all player class
+      operationId: getAllPlayerClass
+      tags:
+        - player-class-controller
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PlayerClassDto'
+    post:
+      summary: create a new player class
+      operationId: createNewPlayerClass
+      tags:
+        - player-class-controller
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlayerClassDto'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlayerClassDto'
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+  /player-class/{playerClassId}:
+    get:
+      summary: get player class by id
+      operationId: getPlayerClassById
+      tags:
+        - player-class-controller
+      parameters:
+        - name: playerClassId
+          in: path
+          required: true
+          description: player class id
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlayerClassDto'
+        404:
+          description: Not found
+    delete:
+      summary: delete player class by id
+      operationId: deletePlayerClassById
+      tags:
+        - player-class-controller
+      parameters:
+        - name: playerClassId
+          in: path
+          required: true
+          description: player class id
+          schema:
+            type: integer
+            format: int64
+      responses:
+        204:
+          description: OK
 components:
   schemas:
+    PlayerClassDto:
+      type: object
+      required:
+        - name
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        hitDice:
+          type: string
     RaceDto:
       type: object
       required:
@@ -244,7 +443,24 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/RaceDto'
+    CampaignPlayerClassDto:
+      type: object
+      required:
+        - campaign
+        - playerClass
+      properties:
+        campaign:
+          type: string
+        playerClass:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlayerClassDto'
     NotFoundDto:
+      type: object
+      properties:
+        message:
+          type: string
+    BadRequest:
       type: object
       properties:
         message:

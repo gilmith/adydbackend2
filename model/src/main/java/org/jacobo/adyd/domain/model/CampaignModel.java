@@ -1,10 +1,8 @@
 package org.jacobo.adyd.domain.model;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.util.Set;
 
@@ -12,7 +10,9 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@SuperBuilder
 public class CampaignModel extends BaseModel{
     private String name;
     private Set<RaceModel> races;
+    private Set<PlayerClassModel> playerClasses;
 }

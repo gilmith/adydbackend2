@@ -6,8 +6,10 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.jacobo.adyd.domain.exception.NotFoundRunTimeException;
 import org.jacobo.adyd.domain.model.CampaignModel;
+import org.jacobo.adyd.domain.model.CampaignPlayerClassModel;
 import org.jacobo.adyd.domain.model.CampaignRaceModel;
 import org.jacobo.adyd.domain.repository.CampaignRepository;
+import org.jacobo.adyd.domain.repository.PlayerClassRepository;
 import org.jacobo.adyd.domain.repository.RaceRepository;
 import org.jacobo.adyd.domain.service.CampaignService;
 import org.jacobo.adyd.infraestructure.mapper.CampaignDtoMapper;
@@ -24,6 +26,7 @@ public class CampaignServiceImpl implements CampaignService {
     private final CampaignRepository campaignRepository;
     private final CampaignDtoMapper campaignMapper;
     private final RaceRepository raceRepository;
+    private final PlayerClassRepository playerClassRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -82,5 +85,22 @@ public class CampaignServiceImpl implements CampaignService {
         races.add(race);
         campaign.setRaces(races);
         campaignRepository.save(campaign);
+    }
+
+    @Override
+    public void addPlayerClassInCampaign(Long campaignId, Long playerClassId) {
+        val campaign = campaignRepository.findById(campaignId)
+                .orElseThrow(() -> new NotFoundRunTimeException("Campaign not found"));
+        val playerClasses = campaign.getPlayerClasses();
+        val playerClass =  playerClassRepository.findById(playerClassId).orElseThrow(() -> new NotFoundRunTimeException("Race not found"));
+        playerClasses.add(playerClass);
+        campaign.setPlayerClasses(playerClasses);
+        campaignRepository.save(campaign);
+    }
+
+    @Override
+    public CampaignPlayerClassModel getPlayerClassForCampaign(Long campaignId) {
+        return campaignRepository.findPlayerClassForCampaign(campaignId)
+                .orElseThrow(() -> new NotFoundRunTimeException("Campaign not found"));
     }
 }
