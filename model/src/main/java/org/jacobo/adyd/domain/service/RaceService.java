@@ -15,4 +15,5 @@ public interface RaceService {
     RaceModel getRaceById(Long raceId);
 
     RaceModel updateRace(Long raceId, RaceModel raceModel);
+
 }

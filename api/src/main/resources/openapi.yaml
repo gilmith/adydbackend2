@@ -319,6 +319,76 @@ paths:
                 $ref: '#/components/schemas/RaceDto'
         404:
           description: Not found
+  /race/{raceId}/characteristic:
+    get:
+      summary: race by id characteristics to create a character
+      operationId: getRaceCharacteristicsById
+      tags:
+        - race-characteristic-controller
+      parameters:
+        - name: raceId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RaceCharacteristicDto'
+        404:
+          description: Not found
+    post:
+      summary: add characteristic to race
+      operationId: addCharacteristicToRace
+      tags:
+        - race-characteristic-controller
+      parameters:
+        - name: raceId
+          in: path
+          schema:
+            type: integer
+            format: int64
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CharacteristicDto'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RaceDto'
+        404:
+          description: Not found
+
+  /characteristic:
+    post:
+      summary: create a new built-in characteristic
+      operationId: createNewCharacteristic
+      tags:
+        - characteristic-controller
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CharacteristicDto'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CharacteristicDto'
+
   /player-class:
     get:
       summary: get all player class
@@ -455,6 +525,47 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/PlayerClassDto'
+    RaceCharacteristicDto:
+      type: object
+      required:
+        - race
+        - characteristic
+      properties:
+        race:
+          $ref: '#/components/schemas/RaceDto'
+        characteristic:
+          type: array
+          items:
+            $ref: '#/components/schemas/CharacteristicDto'
+    CharacteristicDto:
+      type: object
+      required:
+        - name
+        - code
+        - description
+        - type
+        - value
+      properties:
+        code:
+          type: string
+        name:
+          type: string
+        value:
+          type: string
+        description:
+          type: string
+        type:
+          type: string
+          enum:
+            - STRING
+            - INTEGER
+            - BOOLEAN
+        symbol:
+          type: string
+          enum:
+            - BONUS
+            - MALUS
+            - NONE
     NotFoundDto:
       type: object
       properties:
