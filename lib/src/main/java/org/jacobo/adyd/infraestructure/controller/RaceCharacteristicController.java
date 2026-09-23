@@ -21,6 +21,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @RestController
 public class RaceCharacteristicController implements RaceCharacteristicControllerApi {
@@ -43,4 +45,8 @@ public class RaceCharacteristicController implements RaceCharacteristicControlle
         return ResponseEntity.ok(raceCharacteristicDtoMapper.toDto(raceCharacteristicService.getRaceById(raceId)));
     }
 
+    @Override
+    public ResponseEntity<List<String>> getBuiltInCharacteristics(){
+        return ResponseEntity.ok(characteristicService.getBuiltInCharacteristics());
+    }
 }

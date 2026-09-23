@@ -103,4 +103,10 @@ public class CampaignServiceImpl implements CampaignService {
         return campaignRepository.findPlayerClassForCampaign(campaignId)
                 .orElseThrow(() -> new NotFoundRunTimeException("Campaign not found"));
     }
+
+    @Override
+    public CampaignRaceModel getRaceByCampaignId(Long campaignId) {
+        return campaignRepository.findAllRacesByCampaignId(campaignId)
+                .orElseThrow(() -> new NotFoundRunTimeException("Campaign not found"));
+    }
 }

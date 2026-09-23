@@ -368,7 +368,19 @@ paths:
                 $ref: '#/components/schemas/RaceDto'
         404:
           description: Not found
-
+  /race/builtin:
+    get:
+      summary: get built in characteristics name
+      operationId: getBuiltInCharacteristics
+      tags:
+        - race-characteristic-controller
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BuiltInDto'
   /characteristic:
     post:
       summary: create a new built-in characteristic
@@ -566,6 +578,10 @@ components:
             - BONUS
             - MALUS
             - NONE
+    BuiltInDto:
+      type: array
+      items:
+        type: string
     NotFoundDto:
       type: object
       properties:

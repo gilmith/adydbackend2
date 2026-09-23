@@ -37,7 +37,10 @@ public class CharacteristicServiceImpl implements CharacteristicService {
 
     private void createNewBuiltInCharacteristic(CharacteristicModel characteristicModel, String value, Optional<CharacteristicModel> currentCharacteristicModel, RaceModel raceModel) {
         if (currentCharacteristicModel.isEmpty()){
-            val persistedCharacteristic = characteristicRepository.save(BuiltInCharacteristicsEnum.valueOf(characteristicModel.getCode()).getCharacteristicMeta());
+            val characteristicToPersist = BuiltInCharacteristicsEnum.valueOf(characteristicModel.getCode())
+                    .getCharacteristicMeta();
+            characteristicToPersist.setDescription(characteristicModel.getDescription());
+            val persistedCharacteristic = characteristicRepository.save(characteristicToPersist);
             persistedCharacteristic.setValue(value);
             persistedCharacteristic.setSymbol(resolveSymbol(value));
             val raceCharacteristic  = RaceCharacteristicModel.builder()
@@ -76,5 +79,10 @@ public class CharacteristicServiceImpl implements CharacteristicService {
     @Override
     public Optional<CharacteristicModel> findByCode(String code) {
         return characteristicRepository.findByCode(code);
+    }
+
+    @Override
+    public List<String> getBuiltInCharacteristics() {
+        return Arrays.stream(BuiltInCharacteristicsEnum.values()).map(it -> it.getCharacteristicMeta().getCode()).toList();
     }
 }

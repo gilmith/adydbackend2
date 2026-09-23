@@ -4,17 +4,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.jacobo.adyd.domain.model.*;
 import org.jacobo.adyd.domain.repository.CampaignRepository;
-import org.jacobo.adyd.infraestructure.entities.RaceEntity;
 import org.jacobo.adyd.infraestructure.mapper.CampaignMapper;
 import org.jacobo.adyd.infraestructure.persistence.CampaignJpaRepository;
 import org.jacobo.adyd.infraestructure.projection.CampaignRaceProjection;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -61,18 +59,7 @@ public class CampaignRepositoryAdapter implements CampaignRepository {
         if (projections.isEmpty()) {
             return Optional.empty();
         }
-        CampaignRaceModel campaignRace = new CampaignRaceModel();
-        campaignRace.setCampaignName(projections.getFirst().getCampaignName());
-        campaignRace.setRaces(projections.stream()
-                .map(it -> {
-                    val raceModel = new RaceModel();
-                    raceModel.setName(it.getRaceName());
-                    raceModel.setId(it.getRaceId());
-                    return raceModel;
-                })
-                .toList()
-        );
-        return Optional.of(campaignRace);
+        return Optional.of(campaignMapper.raceProjectionToDoman(projections));
     }
 
     @Override
@@ -81,16 +68,7 @@ public class CampaignRepositoryAdapter implements CampaignRepository {
         if (projection.isEmpty()) {
             return Optional.empty();
         }
-        val campaignPlayerClassModel = new CampaignPlayerClassModel();
-        campaignPlayerClassModel.setCampaign(projection.getFirst().getCampaignName());
-        val playerClass = projection.stream().map(it -> {
-            val playerClassModel = new PlayerClassModel();
-            playerClassModel.setName(it.getPlayerClassName());
-            playerClassModel.setId(it.getPlayerClassId());
-            return playerClassModel;
-        }).toList();
-        campaignPlayerClassModel.setPlayerClass(playerClass);
-        return Optional.of(campaignPlayerClassModel);
+        return Optional.of(campaignMapper.projectionToDomain(projection));
     }
 
 }

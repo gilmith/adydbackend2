@@ -27,4 +27,6 @@ public interface CampaignService {
     void addPlayerClassInCampaign(Long campaignId, Long playerClassId);
 
     CampaignPlayerClassModel getPlayerClassForCampaign(Long campaignId);
+
+    CampaignRaceModel getRaceByCampaignId(Long campaignId);
 }
