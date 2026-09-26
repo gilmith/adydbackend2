@@ -1,14 +1,13 @@
 package org.jacobo.adyd.domain.model;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@Builder
 @NoArgsConstructor
 public class CampaignRaceModel {
 

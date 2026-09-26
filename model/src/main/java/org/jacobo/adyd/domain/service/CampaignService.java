@@ -1,6 +1,7 @@
 package org.jacobo.adyd.domain.service;
 
 import org.jacobo.adyd.domain.model.CampaignModel;
+import org.jacobo.adyd.domain.model.CampaignPlayerClassModel;
 import org.jacobo.adyd.domain.model.CampaignRaceModel;
 
 import java.util.List;
@@ -22,4 +23,10 @@ public interface CampaignService {
     void deleteCampaignRace(Long campaignId, Long raceId);
 
     void addRaceInCampaign(Long campaignId, Long raceId);
+
+    void addPlayerClassInCampaign(Long campaignId, Long playerClassId);
+
+    CampaignPlayerClassModel getPlayerClassForCampaign(Long campaignId);
+
+    CampaignRaceModel getRaceByCampaignId(Long campaignId);
 }

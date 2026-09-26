@@ -24,8 +24,9 @@
     <packaging>pom</packaging>
     <name>adydbackend2</name>
 
-    <modules>
+<modules>
         <module>model</module>
+        <module>validation</module>
         <module>lib</module>
         <module>dao</module>
         <module>api</module>

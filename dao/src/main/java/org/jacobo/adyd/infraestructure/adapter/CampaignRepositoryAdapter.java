@@ -2,21 +2,17 @@ package org.jacobo.adyd.infraestructure.adapter;
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import org.jacobo.adyd.domain.model.CampaignModel;
-import org.jacobo.adyd.domain.model.CampaignRaceModel;
-import org.jacobo.adyd.domain.model.RaceModel;
+import org.jacobo.adyd.domain.model.*;
 import org.jacobo.adyd.domain.repository.CampaignRepository;
-import org.jacobo.adyd.infraestructure.entities.RaceEntity;
 import org.jacobo.adyd.infraestructure.mapper.CampaignMapper;
 import org.jacobo.adyd.infraestructure.persistence.CampaignJpaRepository;
 import org.jacobo.adyd.infraestructure.projection.CampaignRaceProjection;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -63,18 +59,16 @@ public class CampaignRepositoryAdapter implements CampaignRepository {
         if (projections.isEmpty()) {
             return Optional.empty();
         }
-        CampaignRaceModel campaignRace = new CampaignRaceModel();
-        campaignRace.setCampaignName(projections.getFirst().getCampaignName());
-        campaignRace.setRaces(projections.stream()
-                .map(it -> {
-                    val raceModel = new RaceModel();
-                    raceModel.setName(it.getRaceName());
-                    raceModel.setId(it.getRaceId());
-                    return raceModel;
-                })
-                .toList()
-        );
-        return Optional.of(campaignRace);
+        return Optional.of(campaignMapper.raceProjectionToDoman(projections));
+    }
+
+    @Override
+    public Optional<CampaignPlayerClassModel> findPlayerClassForCampaign(Long campaignId) {
+        val projection = jpaRepository.findAllPlayerClassForCampaign(campaignId);
+        if (projection.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(campaignMapper.projectionToDomain(projection));
     }
 
 }

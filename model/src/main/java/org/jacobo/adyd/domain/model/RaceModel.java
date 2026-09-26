@@ -1,12 +1,13 @@
 package org.jacobo.adyd.domain.model;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
-@Getter
-@Setter
+@EqualsAndHashCode(callSuper = true)
+@Data
 @NoArgsConstructor
+@SuperBuilder
+@AllArgsConstructor
 public class RaceModel extends BaseModel{
 
     private Long id;

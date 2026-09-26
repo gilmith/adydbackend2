@@ -1,13 +1,14 @@
 package org.jacobo.adyd.domain.model;
 
 import java.time.LocalDateTime;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
+import lombok.*;
+import lombok.experimental.SuperBuilder;
+
+@Data
 @NoArgsConstructor
+@AllArgsConstructor
+@SuperBuilder
 public class BaseModel {
 
     private Long id;
