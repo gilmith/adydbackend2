@@ -7,8 +7,8 @@ import lombok.experimental.SuperBuilder;
 
 import java.util.Set;
 
-@EqualsAndHashCode(callSuper = true, exclude = "campaigns")
-@ToString(callSuper = true, exclude = "campaigns")
+@EqualsAndHashCode(callSuper = true, exclude = {"campaigns", "raceCharacteristicEntities"})
+@ToString(callSuper = true, exclude = {"campaigns", "raceCharacteristicEntities"})
 @Entity
 @Table(name = "race")
 @Data
@@ -22,4 +22,9 @@ public class RaceEntity extends CommonEntity{
 
     @ManyToMany(mappedBy = "raceEntities", fetch = FetchType.LAZY)
     private Set<CampaignEntity> campaigns;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_race")
+    private Set<RaceCharacteristicsEntity> raceCharacteristicEntities;
+
 }

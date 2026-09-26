@@ -4,6 +4,7 @@ import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.jacobo.adyd.api.dto.InternalServerErrorDto;
 import org.jacobo.adyd.api.dto.NotFoundDto;
+import org.jacobo.adyd.domain.exception.ConflictRunTimeException;
 import org.jacobo.adyd.domain.exception.NotFoundRunTimeException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<NotFoundDto> handleConstraintViolationException(ConstraintViolationException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new NotFoundDto().message(e.getMessage()));
+    }
+
+    @ExceptionHandler(ConflictRunTimeException.class)
+    public ResponseEntity<NotFoundDto> handleConflictRunTimeException(ConflictRunTimeException e) {
+        return ResponseEntity.status(e.getHttpStatus())
                 .body(new NotFoundDto().message(e.getMessage()));
     }
 

@@ -23,7 +23,7 @@ public interface CampaignJpaRepository extends JpaRepository<CampaignEntity, Lon
     void deleteCampaignEntitiesByRaceEntities(Set<RaceEntity> raceEntities);
 
     @Query("""
-        SELECT c.name as campaignName, p.name as playerClassName, p.id as playerClassId FROM CampaignEntity c JOIN c.playerClasses p WHERE c.id = :campaignId
+        SELECT c.name as campaignName, p.name as playerClassName, p.id as playerClassId, p.hitDice as hitDice FROM CampaignEntity c JOIN c.playerClasses p WHERE c.id = :campaignId
     """)
     List<CampaignPlayerClassProjection> findAllPlayerClassForCampaign(Long campaignId);
 }

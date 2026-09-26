@@ -5,6 +5,6 @@ public interface CampaignPlayerClassProjection {
     public String getCampaignName();
     public String getPlayerClassName();
     public Long getPlayerClassId();
-    public String  getHitDice();
+    public String getHitDice();
 
 }

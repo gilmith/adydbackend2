@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jacobo.adyd.api.CampaignControllerApi;
 import org.jacobo.adyd.api.dto.CampaignDto;
 import org.jacobo.adyd.api.dto.CampaignPlayerClassDto;
+import org.jacobo.adyd.api.dto.CampaignRaceDto;
 import org.jacobo.adyd.domain.service.CampaignService;
 import org.jacobo.adyd.infraestructure.mapper.CampaignDtoMapper;
 import org.jacobo.adyd.validators.ExistingEntity;
@@ -26,6 +27,7 @@ public class CampaignController implements CampaignControllerApi {
 
     private final CampaignService campaignService;
     private final CampaignDtoMapper campaignMapper;
+    private final CampaignDtoMapper campaignDtoMapper;
 
     @Override
     public ResponseEntity<List<CampaignDto>> getAllCampaign(){
@@ -58,6 +60,15 @@ public class CampaignController implements CampaignControllerApi {
         return ResponseEntity.accepted().build();
     }
 
+    @Override
+    public ResponseEntity<CampaignRaceDto> getRaceByCampaignId(Long campaignId){
+        return ResponseEntity.ok(campaignDtoMapper.toCampaignRaceDto(campaignService.getRaceByCampaignId(campaignId)));
+    }
 
+    @Override
+    public ResponseEntity<Void> addRaceInCampaign(Long campaignId, Long raceId){
+        campaignService.addRaceInCampaign(campaignId, raceId);
+        return ResponseEntity.accepted().build();
+    }
 
 }
