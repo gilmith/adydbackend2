@@ -4,6 +4,5 @@ import org.jacobo.adyd.domain.model.PlayerClassCharacteristicModel;
 
 public interface PlayerClassCharacteristicService {
 
-    PlayerClassCharacteristicModel createNewPlayerCharacteristic(PlayerClassCharacteristicModel playerClassCharacteristicModel);
-
+    PlayerClassCharacteristicModel save(PlayerClassCharacteristicModel playerClassCharacteristic);
 }

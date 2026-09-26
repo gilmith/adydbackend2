@@ -15,4 +15,9 @@ public interface CharacteristicJpaRepository extends JpaRepository<Characteristi
             JOIN RC.race R WHERE (C.code = :code OR C.name = :code) AND R.id = :raceId
     """)
     Optional<CharacteristicsEntity> findByCodeAndRace(String code, Long raceId);
+    @Query("""
+        SELECT C FROM CharacteristicsEntity C JOIN C.playerClassCharacteristicsEntity PCC
+            JOIN PCC.playerClass PC WHERE (C.code = :code OR C.name = :code) AND PC.id = :playerClassId
+    """)
+   Optional<CharacteristicsEntity> findByCodeAndPlayerClass(String code, Long playerClassId);
 }

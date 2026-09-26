@@ -16,4 +16,5 @@ public interface PlayerClassService {
 
     PlayerClassModel update(PlayerClassModel playerClassModel);
 
+    PlayerClassModel getPlayerClassById(Long playerClassId);
 }

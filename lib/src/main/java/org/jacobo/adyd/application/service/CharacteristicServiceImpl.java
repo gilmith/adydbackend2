@@ -6,9 +6,7 @@ import org.jacobo.adyd.domain.exception.ConflictRunTimeException;
 import org.jacobo.adyd.domain.exception.NotFoundRunTimeException;
 import org.jacobo.adyd.domain.model.*;
 import org.jacobo.adyd.domain.repository.CharacteristicRepository;
-import org.jacobo.adyd.domain.service.CharacteristicService;
-import org.jacobo.adyd.domain.service.RaceCharacteristicService;
-import org.jacobo.adyd.domain.service.RaceService;
+import org.jacobo.adyd.domain.service.*;
 import org.jacobo.adyd.infraestructure.mapper.CharacteristicMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,8 +22,10 @@ public class CharacteristicServiceImpl implements CharacteristicService {
 
     private final CharacteristicRepository characteristicRepository;
     private final RaceCharacteristicService raceCharacteristicService;
+    private final PlayerClassCharacteristicService playerClassCharacteristicService;
     private final RaceService raceService;
     private final CharacteristicMapper characteristicMapper;
+    private final PlayerClassService playerClassService;
 
     @Override
     @Transactional
@@ -38,6 +38,54 @@ public class CharacteristicServiceImpl implements CharacteristicService {
             createNewCustomCharacteristic(characteristicModel, value, currentCharacteristicModel, raceModel);
         }
         return characteristicModel;
+    }
+
+
+
+    @Override
+    public CharacteristicModel createNewPropertyPlayer(Long playerClassId, CharacteristicModel characteristicModel, String value) {
+        val playerClassModel = playerClassService.getPlayerClassById(playerClassId);
+        val currentCharacteristicModel = characteristicRepository.findByCodeAndPlayerClass(characteristicModel.getCode(), playerClassId);
+        if (isBuiltInPlayerClass(characteristicModel)) {
+            createNewBuiltInCharacteristicForPlayerClass(characteristicModel, value, currentCharacteristicModel, playerClassModel);
+        } else {
+            createNewCustomCharacteristicForPlayerClass(characteristicModel, value, currentCharacteristicModel, playerClassModel);
+        }
+        return characteristicModel;
+    }
+
+    private void createNewBuiltInCharacteristicForPlayerClass(CharacteristicModel characteristicModel, String value, Optional<CharacteristicModel> currentCharacteristicModel, PlayerClassModel playerClassModel) {
+        currentCharacteristicModel.ifPresent(characteristic -> {
+            throw new ConflictRunTimeException("Player Class Characteristic already exists");
+        });
+        val characteristicToPersist = BuiltInPlayerCharacteristicsEnum.valueOf(characteristicModel.getCode())
+                .getCharacteristicMeta();
+        characteristicToPersist.setDescription(characteristicModel.getDescription());
+        characteristicToPersist.setShortDescription(characteristicModel.getShortDescription());
+        val persistedCharacteristic = characteristicRepository.save(characteristicToPersist);
+        persistedCharacteristic.setValue(value);
+        persistedCharacteristic.setSymbol(resolveSymbol(value));
+        val playerClassCharacteristic = PlayerClassCharacteristicModel.builder()
+                .characteristic(persistedCharacteristic)
+                .playerClass(playerClassModel)
+                .build();
+        playerClassCharacteristicService.save(playerClassCharacteristic);
+
+    }
+
+    private void createNewCustomCharacteristicForPlayerClass(CharacteristicModel characteristicModel, String value, Optional<CharacteristicModel> currentCharacteristicModel, PlayerClassModel playerClassModel) {
+        currentCharacteristicModel.ifPresent(characteristic -> {
+            throw new ConflictRunTimeException("Race Characteristic already exists");
+        });
+        val characteristicToPersist = characteristicRepository.saveNewCharacteristic(characteristicModel, playerClassModel);
+        characteristicToPersist.setValue(value);
+        characteristicToPersist.setSymbol(resolveSymbol(value));
+        characteristicModel.setBuiltIn(false);
+        val playerClassCharacteristicModel = PlayerClassCharacteristicModel.builder()
+                .characteristic(characteristicToPersist)
+                .playerClass(playerClassModel)
+                .build();
+        playerClassCharacteristicService.save(playerClassCharacteristicModel);
     }
 
     private void createNewCustomCharacteristic(CharacteristicModel characteristicModel, String value, Optional<CharacteristicModel> currentCharacteristicModel, RaceModel raceModel) {
@@ -83,6 +131,14 @@ public class CharacteristicServiceImpl implements CharacteristicService {
 
     private Boolean isBuiltIn(CharacteristicModel characteristicModel) {
         return Arrays.stream(BuiltInCharacteristicsEnum.values()).anyMatch(it -> {
+            CharacteristicModel meta = it.getCharacteristicMeta();
+            return characteristicModel.getCode().equals(meta.getCode())
+                    || characteristicModel.getCode().equals(meta.getName());
+        });
+    }
+
+    private boolean isBuiltInPlayerClass(CharacteristicModel characteristicModel) {
+        return Arrays.stream(BuiltInPlayerCharacteristicsEnum.values()).anyMatch(it -> {
             CharacteristicModel meta = it.getCharacteristicMeta();
             return characteristicModel.getCode().equals(meta.getCode())
                     || characteristicModel.getCode().equals(meta.getName());

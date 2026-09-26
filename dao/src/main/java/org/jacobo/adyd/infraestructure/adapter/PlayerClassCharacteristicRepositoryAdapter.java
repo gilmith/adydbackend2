@@ -12,8 +12,9 @@ public class PlayerClassCharacteristicRepositoryAdapter implements PlayerClassCh
 
     private final PlayerClassCharacteristicRepository playerClassCharacteristicRepository;
 
+
     @Override
-    public PlayerClassCharacteristicModel createNewPlayerCharacteristic(PlayerClassCharacteristicModel playerClassCharacteristicModel) {
-        return playerClassCharacteristicRepository.createNewPlayerCharacteristic(playerClassCharacteristicModel);
+    public PlayerClassCharacteristicModel save(PlayerClassCharacteristicModel playerClassCharacteristicModel) {
+        return playerClassCharacteristicRepository.save(playerClassCharacteristicModel);
     }
 }

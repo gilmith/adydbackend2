@@ -40,4 +40,9 @@ public class PlayerClassServiceImpl implements PlayerClassService {
     public PlayerClassModel update(PlayerClassModel playerClassModel) {
         return null;
     }
+
+    @Override
+    public PlayerClassModel getPlayerClassById(Long playerClassId) {
+        return playerClassRepository.findById(playerClassId).orElseThrow(() -> new NotFoundRunTimeException("Player class not found"));
+    }
 }

@@ -9,6 +9,8 @@ public interface CharacteristicService {
 
     CharacteristicModel createNewProperty(Long raceId, CharacteristicModel characteristicModel, String value);
 
+    CharacteristicModel createNewPropertyPlayer(Long playerClassId, CharacteristicModel characteristicModel, String value);
+
     Optional<CharacteristicModel> findByCode(String code);
 
     List<String> getBuiltInCharacteristics();

@@ -12,10 +12,9 @@ public class PlayerClassCharacteristicServiceImpl implements PlayerClassCharacte
 
     private final PlayerClassCharacteristicRepository playerCharacteristicRepository;
 
+
     @Override
-    public PlayerClassCharacteristicModel createNewPlayerCharacteristic(PlayerClassCharacteristicModel playerClassCharacteristicModel) {
-        return playerCharacteristicRepository.save(playerClassCharacteristicModel);
+    public PlayerClassCharacteristicModel save(PlayerClassCharacteristicModel playerClassCharacteristic) {
+        return playerCharacteristicRepository.save(playerClassCharacteristic);
     }
-
-
 }
