@@ -1,0 +1,67 @@
+@startuml update-race-characteristic
+title PATCH /race/{raceId}/characteristic/{characteristicId} — updateRaceCharacteristic
+' Capas: Web -> Aplicación -> Puerto -> Infraestructura -> Dominio
+
+actor Cliente
+participant "RaceCharacteristicController" as RCC
+participant "CharacteristicDtoMapper" as CDM
+participant "CharacteristicServiceImpl\n(implements CharacteristicService)" as CS
+participant "RaceService" as RS
+participant "CharacteristicRepositoryAdapter\n(implements CharacteristicRepository)" as CR
+participant "CharacteristicJpaRepository" as CJ
+participant "CharacteristicMapper" as CM
+participant "RaceCharacteristicService" as RChS
+participant "RaceCharacteristicRepositoryAdapter" as RChR
+participant "RaceCharacteristicJpaRepository" as RChJ
+participant "RaceCharacteristicMapper" as RChM
+participant "GlobalExceptionHandler" as GEH
+
+Cliente -> RCC : PATCH /race/{raceId}/characteristic/{characteristicId} (body CharacteristicToModifyDto)
+RCC -> CDM : toModel(characteristicToModifyDto)
+CDM --> RCC : CharacteristicModel
+RCC -> CS : updateCharacteristic(raceId, characteristicId, model)
+CS -> RS : getRaceById(raceId)
+RS --> CS : RaceModel (404 si la raza no existe)
+CS -> CR : findById(characteristicId)
+CR -> CJ : findById(characteristicId)
+CJ --> CR : Optional<CharacteristicsEntity>
+CR -> CM : toCharacteristic(entity)
+CR --> CS : Optional<CharacteristicModel>
+alt optional vacío
+    CS -> GEH : throw NotFoundRunTimeException("Characteristic not found")
+    GEH --> Cliente : 404 NotFoundDto
+else present
+    CS -> CM : copyValues(existing, model)  ' ignoreByDefault, id.ignore
+    CM --> CS : CharacteristicModel (copia con datos de model)
+    CS -> RChS : findRaceCharacteristicByRaceIdAndCharacteristicId(raceId, characteristicId)
+    RChS -> RChR : findByRaceIdAndCharacteristicId(raceId, characteristicId)
+    RChR -> RChJ : findByRaceIdAndCharacteristicId(raceId, characteristicId)
+    RChJ --> RChR : RaceCharacteristicsEntity
+    RChR -> RChM : toRaceModel(entity)
+    RChM --> RChR : RaceCharacteristicModel
+    RChR --> RChS : RaceCharacteristicModel
+    RChS --> CS : raceCharacteristic
+    alt model.getValue() != null
+        CS -> CS : characteristicToSave.setValue(model.getValue())
+    end
+    CS -> CS : raceCharacteristic.setCharacteristic(characteristicToSave)
+    CS -> RChS : save(raceCharacteristic)
+    RChS -> RChR : save(raceCharacteristic)
+    RChR -> RChM : toEntity(...)
+    RChR -> RChJ : save(entity)
+    RChJ --> RChR : RaceCharacteristicsEntity
+    RChR --> RChS : ok
+    RChS --> CS : ok
+    CS -> CR : save(characteristicToSave)
+    CR -> CM : toEntity(model)
+    CR -> CJ : save(entity)
+    CJ --> CR : CharacteristicsEntity
+    CR -> CM : toCharacteristic(entity)
+    CR --> CS : CharacteristicModel
+    CS --> RCC : CharacteristicModel
+    RCC -> CDM : toDto(result)
+    CDM --> RCC : CharacteristicDto
+    RCC --> Cliente : 200 OK [CharacteristicDto]
+end
+
+@enduml

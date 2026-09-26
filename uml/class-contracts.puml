@@ -1,0 +1,138 @@
+@startuml class-contracts
+title Contratos y soporte — módulos api (generado), validation y app
+skinparam classAttributeIconSize 0
+
+package "org.jacobo.adyd.api (generado por openapi)" {
+
+    interface RaceControllerApi
+    interface PlayerClassControllerApi
+    interface CampaignControllerApi
+    interface RaceCharacteristicControllerApi
+    interface CharacteristicControllerApi <<sin impl>>
+    interface PlayerClassCharacteristicsControllerApi <<generado obsoleto>>
+
+    class RaceDto {
+        Long id
+        String name
+    }
+    class PlayerClassDto {
+        Long id
+        String name
+        String hitDice
+    }
+    class CampaignDto {
+        Long id
+        String name
+    }
+    class CharacteristicDto {
+        Long id
+        String code
+        String name
+        String value
+        String shortDescription
+        String description
+        TypeEnum type
+        SymbolEnum symbol
+    }
+    class CharacteristicToModifyDto {
+        Long id
+        String code
+        String name
+        String value
+        String shortDescription
+        String description
+        TypeEnum type
+        SymbolEnum symbol
+    }
+    class RaceCharacteristicDto {
+        RaceDto race
+        List<CharacteristicDto> characteristic
+    }
+    class CampaignRaceDto {
+        String campaign
+        List<RaceDto> races
+    }
+    class CampaignPlayerClassDto {
+        String campaign
+        List<PlayerClassDto> playerClass
+    }
+    class NotFoundDto
+    class InternalServerErrorDto
+    class ConflictDto
+    class BadRequest
+    enum "CharacteristicDto.TypeEnum" as dtoType {
+        STRING
+        INTEGER
+        BOOLEAN
+    }
+    enum "CharacteristicDto.SymbolEnum" as dtoSymbol {
+        BONUS
+        MALUS
+        NONE
+    }
+}
+
+package "org.jacobo.adyd.validators (módulo validation)" {
+    annotation ExistingEntity {
+        String value()
+        String message()
+    }
+    class ExistingEntityValidator {
+        String entityName
+        {method} initialize(ExistingEntity)
+        {method} isValid(Long, ConstraintValidatorContext)
+    }
+    interface EntityExistenceChecker {
+        boolean exists(String entityName, Long id)
+    }
+}
+
+package "org.jacobo.adyd.config (módulo app)" {
+    class GlobalExceptionHandler {
+        ResponseEntity<NotFoundDto> handleNotFoundRunTimeException(NotFoundRunTimeException)
+        ResponseEntity<NotFoundDto> handleConstraintViolationException(ConstraintViolationException)
+        ResponseEntity<NotFoundDto> handleConflictRunTimeException(ConflictRunTimeException)
+        ResponseEntity<InternalServerErrorDto> handleException(Exception)
+    }
+    class Main <<@SpringBootApplication>>
+}
+
+' --- Relaciones en api ---
+CharacteristicDto --> dtoType : type
+CharacteristicDto --> dtoSymbol : symbol
+CharacteristicToModifyDto --> dtoType : type
+CharacteristicToModifyDto --> dtoSymbol : symbol
+RaceCharacteristicDto o-- RaceDto : race
+RaceCharacteristicDto o-- "many" CharacteristicDto : characteristic
+CampaignRaceDto o-- "many" RaceDto : races
+CampaignPlayerClassDto o-- "many" PlayerClassDto : playerClass
+
+RaceControllerApi ..> RaceDto
+PlayerClassControllerApi ..> PlayerClassDto
+CampaignControllerApi ..> CampaignDto
+CampaignControllerApi ..> CampaignRaceDto
+CampaignControllerApi ..> CampaignPlayerClassDto
+RaceCharacteristicControllerApi ..> RaceCharacteristicDto
+RaceCharacteristicControllerApi ..> CharacteristicDto
+RaceCharacteristicControllerApi ..> CharacteristicToModifyDto
+CharacteristicControllerApi ..> CharacteristicDto
+
+' --- Validación ---
+ExistingEntity *--> ExistingEntityValidator : validatedBy
+ExistingEntityValidator ..|> ConstraintValidator
+ExistingEntityValidator --> EntityExistenceChecker
+
+' --- App: manejo global de errores ---
+GlobalExceptionHandler ..> NotFoundDto
+GlobalExceptionHandler ..> InternalServerErrorDto
+GlobalExceptionHandler ..|> RestControllerAdvice
+
+note bottom of CharacteristicControllerApi
+  La API define POST /characteristic (operationId createNewCharacteristic)
+  y DELETE /campaign/{campaignId}/race/{raceId} (deleteRaceInCampaign),
+  pero NO hay controladores que los implementen: no responden en runtime.
+  PlayerClassCharacteristicsControllerApi está generado pero su ruta
+  ya no existe en openapi.yaml actual.
+end note
+
+@enduml

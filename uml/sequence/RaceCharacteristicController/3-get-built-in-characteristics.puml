@@ -1,0 +1,20 @@
+@startuml get-built-in-characteristics
+title GET /race/builtin — getBuiltInCharacteristics
+' Endpoint que NO accede a BD: solo enumera los enums del dominio.
+
+actor Cliente
+participant "RaceCharacteristicController" as RCC
+participant "CharacteristicServiceImpl\n(implements CharacteristicService)" as CS
+participant "BuiltInCharacteristicsEnum" as BICE
+
+Cliente -> RCC : GET /race/builtin
+RCC -> CS : getBuiltInCharacteristics()
+CS -> BICE : values()
+loop para cada enum
+    BICE --> CS : getCharacteristicMeta().getCode()
+end
+CS -> CS : toList()  ' códigos con sufijo _RACE (STRENGTH_MINIMUM_RACE, ...)
+CS --> RCC : List<String> (códigos)
+RCC --> Cliente : 200 OK [List<String>]
+
+@enduml

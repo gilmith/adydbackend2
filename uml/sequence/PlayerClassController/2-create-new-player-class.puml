@@ -1,0 +1,30 @@
+@startuml create-new-player-class
+title POST /player-class — createNewPlayerClass
+' Capas: Web(controller) -> Aplicación(serviceImpl) -> Puerto(repository) -> Infraestructura(Jpa/Mapper/Entity) -> Dominio(Model)
+
+actor Cliente
+participant "PlayerClassController" as PC
+participant "PlayerClassServiceImpl\n(implements PlayerClassService)" as PS
+participant "PlayerClassRepositoryAdapter\n(implements PlayerClassRepository)" as PA
+participant "PlayerClassJpaRepository" as PJ
+participant "PlayerClassMapper" as PM
+participant "PlayerClassDtoMapper" as PDM
+
+Cliente -> PC : POST /player-class (body PlayerClassDto)
+PC -> PDM : toModel(playerClassDto)
+PDM --> PC : PlayerClassModel
+PC -> PS : createNewPlayerClass(playerClassModel)
+PS -> PA : save(playerClassModel)
+PA -> PM : toEntity(playerClassModel)
+PM --> PA : PlayerClassEntity
+PA -> PJ : save(entity)
+PJ --> PA : PlayerClassEntity (con id)
+PA -> PM : toDomain(entity)
+PM --> PA : PlayerClassModel
+PA --> PS : PlayerClassModel
+PS --> PC : PlayerClassModel
+PC -> PDM : toDto(playerClassModel)
+PDM --> PC : PlayerClassDto
+PC --> Cliente : 200 OK [PlayerClassDto]
+
+@enduml

@@ -1,0 +1,40 @@
+@startuml modify-race
+title PATCH /race/{raceId} — modifyRace
+' Capas: Web(controller) -> Aplicación(serviceImpl) -> Puerto(repository) -> Infraestructura(Jpa/Mapper/Entity) -> Dominio(Model)
+
+actor Cliente
+participant "RaceController" as RC
+participant "RaceServiceImpl\n(implements RaceService)" as RS
+participant "RaceRepositoryAdapter\n(implements RaceRepository)" as RA
+participant "RaceJpaRepository" as RJ
+participant "RaceMapper" as RM
+participant "RaceDtoMapper" as RDM
+participant "GlobalExceptionHandler" as GEH
+
+Cliente -> RC : PATCH /race/{raceId} (body RaceDto)
+RC -> RDM : toModel(raceDto)
+RDM --> RC : RaceModel
+RC -> RS : updateRace(raceId, raceModel)
+RS -> RA : findById(raceId)
+RA -> RJ : findById(raceId)
+RJ --> RA : Optional<RaceEntity>
+RA --> RS : Optional<RaceModel>
+alt no existe
+    RS -> GEH : throw NotFoundRunTimeException("Race id not found")
+    GEH --> Cliente : 404 NotFoundDto
+else existe
+    RS -> RDM : getModifiedRace(currentRace, raceModel)
+    RDM --> RS : RaceModel (id/auditoría preservados, updateDate=now)
+    RS -> RA : save(modified)
+    RA -> RM : toEntity(modified)
+    RA -> RJ : save(entity)
+    RJ --> RA : RaceEntity
+    RA -> RM : toDomain(entity)
+    RA --> RS : RaceModel
+    RS --> RC : RaceModel
+    RC -> RDM : toDto(raceModel)
+    RDM --> RC : RaceDto
+    RC --> Cliente : 200 OK [RaceDto]
+end
+
+@enduml

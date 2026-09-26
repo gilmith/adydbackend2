@@ -1,0 +1,32 @@
+@startuml get-player-class-by-id
+title GET /player-class/{playerClassId} — getPlayerClassById
+' Capas: Web(controller) -> Aplicación(serviceImpl) -> Puerto(repository) -> Infraestructura(Jpa/Mapper/Entity) -> Dominio(Model)
+
+actor Cliente
+participant "PlayerClassController" as PC
+participant "PlayerClassServiceImpl\n(implements PlayerClassService)" as PS
+participant "PlayerClassRepositoryAdapter\n(implements PlayerClassRepository)" as PA
+participant "PlayerClassJpaRepository" as PJ
+participant "PlayerClassMapper" as PM
+participant "PlayerClassDtoMapper" as PDM
+participant "GlobalExceptionHandler" as GEH
+
+Cliente -> PC : GET /player-class/{id}
+PC -> PS : getById(id)
+PS -> PA : findById(id)
+PA -> PJ : findById(id)
+PJ --> PA : Optional<PlayerClassEntity>
+PA -> PM : toDomain(entity)
+PM --> PA : PlayerClassModel
+PA --> PS : Optional<PlayerClassModel>
+alt optional vacío
+    PS -> GEH : throw NotFoundRunTimeException("Player class not found")
+    GEH --> Cliente : 404 NotFoundDto
+else present
+    PS --> PC : PlayerClassModel
+    PC -> PDM : toDto(playerClassModel)
+    PDM --> PC : PlayerClassDto
+    PC --> Cliente : 200 OK [PlayerClassDto]
+end
+
+@enduml

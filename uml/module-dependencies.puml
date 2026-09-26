@@ -1,0 +1,26 @@
+@startuml module-dependencies
+title Dependencias entre módulos Maven de adydbackend2
+
+[app] as app <<arranque Spring Boot + manejo de errores>>
+[lib] as lib <<aplicación + web: controllers, service impls, dto mappers>>
+[dao] as dao <<infraestructura JPA: entities, repos, mappers, adapters>>
+[model] as model <<dominio puro: modelos, enums, puertos, excepciones>>
+[api] as api <<contratos generados por openapi: DTOs e interfaces de controllers>>
+[validation] as validation <<constraints de existencias (jakarta validation)>>
+
+app --> lib : boot
+app --> dao : beans JPA
+lib --> model : usa puertos y modelos
+lib --> api : implementa interfaces + usa DTOs
+lib --> validation : implementa EntityExistenceChecker
+lib --> dao : (dependencia de módulo)
+dao --> model : implementa puertos, usa modelos
+
+model ..> model : pura Java/Spring, sin dependencias del proyecto
+
+note right of lib
+  Dependencia circular de concepto: lib depende de dao como módulo
+  (los ServiceImpl inyectan repositories), aunque los "ports" viven en model.
+end note
+
+@enduml

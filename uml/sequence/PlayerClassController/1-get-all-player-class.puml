@@ -1,0 +1,28 @@
+@startuml get-all-player-class
+title GET /player-class — getAllPlayerClass
+' Capas: Web(controller) -> Aplicación(serviceImpl) -> Puerto(repository) -> Infraestructura(Jpa/Mapper/Entity) -> Dominio(Model)
+
+actor Cliente
+participant "PlayerClassController" as PC
+participant "PlayerClassServiceImpl\n(implements PlayerClassService)" as PS
+participant "PlayerClassRepositoryAdapter\n(implements PlayerClassRepository)" as PA
+participant "PlayerClassJpaRepository" as PJ
+participant "PlayerClassMapper" as PM
+participant "PlayerClassDtoMapper" as PDM
+
+Cliente -> PC : GET /player-class
+PC -> PS : getAll()
+PS -> PA : findAll()
+PA -> PJ : findAll()
+PJ --> PA : List<PlayerClassEntity>
+loop para cada playerClassEntity
+    PA -> PM : toDomain(entity)
+    PM --> PA : PlayerClassModel
+end
+PA --> PS : List<PlayerClassModel>
+PS --> PC : List<PlayerClassModel>
+PC -> PDM : toDtoList(List<PlayerClassModel>)
+PDM --> PC : List<PlayerClassDto>
+PC --> Cliente : 200 OK [List<PlayerClassDto>]
+
+@enduml

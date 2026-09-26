@@ -1,0 +1,20 @@
+@startuml delete-player-class
+title DELETE /player-class/{playerClassId} — deletePlayerClassById
+' Capas: Web(controller) -> Aplicación(serviceImpl) -> Puerto(repository) -> Infraestructura(Jpa/Mapper/Entity)
+
+actor Cliente
+participant "PlayerClassController" as PC
+participant "PlayerClassServiceImpl\n(implements PlayerClassService)" as PS
+participant "PlayerClassRepositoryAdapter\n(implements PlayerClassRepository)" as PA
+participant "PlayerClassJpaRepository" as PJ
+
+Cliente -> PC : DELETE /player-class/{playerClassId}
+PC -> PS : deleteById(playerClassId)
+PS -> PA : deleteById(playerClassId)
+PA -> PJ : deleteById(playerClassId)
+PJ --> PA : ok
+PA --> PS : ok
+PS --> PC : ok
+PC --> Cliente : 204 No Content (sin body)
+
+@enduml

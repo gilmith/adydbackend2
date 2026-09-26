@@ -1,0 +1,84 @@
+@startuml add-characteristic-to-race
+title POST /race/{raceId}/characteristic — addCharacteristicToRace (valor + símbolo)
+' Capas: Web -> Aplicación -> Puerto -> Infraestructura -> Dominio
+' Nota: con un code canónico (p.ej. STRENGTH_MINIMUM) createNewBuiltInCharacteristic
+' lanza 500 porque usa BuiltInCharacteristicsEnum.valueOf(code) sin sufijo _RACE.
+
+actor Cliente
+participant "RaceCharacteristicController" as RCC
+participant "CharacteristicDtoMapper" as CDM
+participant "CharacteristicServiceImpl\n(implements CharacteristicService)" as CS
+participant "RaceService" as RS
+participant "CharacteristicRepositoryAdapter\n(implements CharacteristicRepository)" as CR
+participant "CharacteristicJpaRepository" as CJ
+participant "CharacteristicMapper" as CM
+participant "RaceCharacteristicService" as RChS
+participant "RaceCharacteristicRepositoryAdapter" as RChR
+participant "RaceCharacteristicJpaRepository" as RChJ
+participant "RaceCharacteristicMapper" as RChM
+participant "RaceDtoMapper" as RDM
+participant "GlobalExceptionHandler" as GEH
+
+Cliente -> RCC : POST /race/{raceId}/characteristic (body CharacteristicDto)
+RCC -> CDM : toModel(characteristicDto)
+CDM --> RCC : CharacteristicModel
+RCC -> CS : createNewProperty(raceId, model, characteristicDto.getValue())
+CS -> RS : getRaceById(raceId)
+RS --> CS : RaceModel
+CS -> CR : findByCodeAndRace(code, raceId)
+CR -> CJ : findByCodeAndRace(code, raceId)  ' JOIN raceCharacteristicsEntity + race
+CJ --> CR : Optional<CharacteristicsEntity>
+CR -> CM : toCharacteristic(entity)
+CM --> CR : CharacteristicModel
+CR --> CS : Optional<CharacteristicModel>
+
+CS -> CS : isBuiltIn(model)?  ' code == meta.code OR meta.name
+alt característica ya asignada a la raza (Optional present)
+    CS -> GEH : throw ConflictRunTimeException("Race Characteristic already exists")
+    GEH --> Cliente : 409 ConflictDto
+else NO es built-in (custom)
+    CS -> CR : saveNewCharacteristic(model, raceModel)
+    CR -> CM : toEntity(model)
+    CR -> CJ : save(entity)
+    CJ --> CR : CharacteristicsEntity (con id)
+    CR -> CM : toCharacteristic(entity)
+    CM --> CR : CharacteristicModel
+    CR --> CS : CharacteristicModel
+    CS -> CS : setValue(value)
+    CS -> CS : setSymbol(resolveSymbol(value))  ' int>0 BONUS / int<0 MALUS / no numérico NONE
+    CS -> CS : model.setBuiltIn(false)
+    CS -> RChS : save(RaceCharacteristicModel{characteristic, race})
+    RChS -> RChR : save(...)
+    RChR -> RChM : toEntity(...)
+    RChR -> RChJ : save(entity)
+    RChJ --> RChR : RaceCharacteristicsEntity
+    RChR -> RChM : toRaceModel(entity)
+    RChR --> RChS : RaceCharacteristicModel
+    RChS --> CS : ok
+else es built-in
+    CS -> CS : createNewBuiltInCharacteristic(...)
+    note right of CS
+      BuiltInCharacteristicsEnum.valueOf(characteristicModel.getCode()) → 500
+      si el code viene canónico sin sufijo _RACE
+    end note
+    CS -> CR : save(characteristicToPersist)
+    CR -> CM : toEntity(meta con description/shortDescription)
+    CR -> CJ : save(entity)
+    CJ --> CR : CharacteristicsEntity (con id)
+    CR --> CS : CharacteristicModel (persistida)
+    CS -> CS : setValue(value); setSymbol(resolveSymbol(value))
+    CS -> RChS : save(RaceCharacteristicModel{characteristic, race})
+    RChS -> RChR : save(...)
+    RChR -> RChJ : save(entity)
+    RChR --> RChS : RaceCharacteristicModel
+    RChS --> CS : ok
+end
+
+'alt: el service devuelve el model; el controller relee la raza para responder
+RCC -> RS : getRaceById(raceId)
+RS --> RCC : RaceModel
+RCC -> RDM : toDto(raceModel)
+RDM --> RCC : RaceDto
+RCC --> Cliente : 200 OK [RaceDto]
+
+@enduml
