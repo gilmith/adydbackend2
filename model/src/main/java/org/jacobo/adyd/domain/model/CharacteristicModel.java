@@ -22,5 +22,7 @@ public class CharacteristicModel extends BaseModel{
     private Boolean builtIn;
     private String value;
     private SymbolTypeEnum symbol;
+    private String shortDescription;
+
 
 }

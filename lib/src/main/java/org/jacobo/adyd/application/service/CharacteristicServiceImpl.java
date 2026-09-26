@@ -2,6 +2,7 @@ package org.jacobo.adyd.application.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import org.jacobo.adyd.domain.exception.ConflictRunTimeException;
 import org.jacobo.adyd.domain.model.*;
 import org.jacobo.adyd.domain.repository.CharacteristicRepository;
 import org.jacobo.adyd.domain.service.CharacteristicService;
@@ -27,42 +28,50 @@ public class CharacteristicServiceImpl implements CharacteristicService {
     public CharacteristicModel createNewProperty(Long raceId, CharacteristicModel characteristicModel, String value) {
         val raceModel = raceService.getRaceById(raceId);
         val currentCharacteristicModel = characteristicRepository.findByCodeAndRace(characteristicModel.getCode(), raceId);
-        if (isBuiltIn(characteristicModel)){
+        if (isBuiltIn(characteristicModel)) {
             createNewBuiltInCharacteristic(characteristicModel, value, currentCharacteristicModel, raceModel);
         } else {
-            //TBC propiedades dinamicas
+            createNewCustomCharacteristic(characteristicModel, value, currentCharacteristicModel, raceModel);
         }
         return characteristicModel;
     }
 
+    private void createNewCustomCharacteristic(CharacteristicModel characteristicModel, String value, Optional<CharacteristicModel> currentCharacteristicModel, RaceModel raceModel) {
+        currentCharacteristicModel.ifPresent(characteristic -> {
+            throw new ConflictRunTimeException("Race Characteristic already exists");
+        });
+        val characteristicToPersist = characteristicRepository.saveNewCharacteristic(characteristicModel, raceModel);
+        characteristicToPersist.setValue(value);
+        characteristicToPersist.setSymbol(resolveSymbol(value));
+        characteristicModel.setBuiltIn(false);
+        val raceCharacteristic = RaceCharacteristicModel.builder()
+                .characteristic(characteristicToPersist)
+                .race(raceModel)
+                .build();
+        raceCharacteristicService.save(raceCharacteristic);
+    }
+
     private void createNewBuiltInCharacteristic(CharacteristicModel characteristicModel, String value, Optional<CharacteristicModel> currentCharacteristicModel, RaceModel raceModel) {
-        if (currentCharacteristicModel.isEmpty()){
-            val characteristicToPersist = BuiltInCharacteristicsEnum.valueOf(characteristicModel.getCode())
-                    .getCharacteristicMeta();
-            characteristicToPersist.setDescription(characteristicModel.getDescription());
-            val persistedCharacteristic = characteristicRepository.save(characteristicToPersist);
-            persistedCharacteristic.setValue(value);
-            persistedCharacteristic.setSymbol(resolveSymbol(value));
-            val raceCharacteristic  = RaceCharacteristicModel.builder()
-                    .characteristic(persistedCharacteristic)
-                    .race(raceModel)
-                    .build();
-            raceCharacteristicService.save(raceCharacteristic);
-        } else {
-            //esto esta mal es una modificacion el isEmpty esta a false
-//            val raceCharacteristic  = RaceCharacteristicModel.builder()
-//                    .characteristic(currentCharacteristicModel.get())
-//                    .race(raceModel)
-//                    .value(value)
-//                    .symbol(resolveSymbol(value))
-//                    .build();
-//            raceCharacteristicService.save(raceCharacteristic);
-        }
+        currentCharacteristicModel.ifPresent(characteristic -> {
+            throw new ConflictRunTimeException("Race Characteristic already exists");
+        });
+        val characteristicToPersist = BuiltInCharacteristicsEnum.valueOf(characteristicModel.getCode())
+                .getCharacteristicMeta();
+        characteristicToPersist.setDescription(characteristicModel.getDescription());
+        characteristicToPersist.setShortDescription(characteristicModel.getShortDescription());
+        val persistedCharacteristic = characteristicRepository.save(characteristicToPersist);
+        persistedCharacteristic.setValue(value);
+        persistedCharacteristic.setSymbol(resolveSymbol(value));
+        val raceCharacteristic = RaceCharacteristicModel.builder()
+                .characteristic(persistedCharacteristic)
+                .race(raceModel)
+                .build();
+        raceCharacteristicService.save(raceCharacteristic);
     }
 
     private SymbolTypeEnum resolveSymbol(String value) {
-        try{
-            return Integer.parseInt(value) >0 ? SymbolTypeEnum.BONUS : SymbolTypeEnum.MALUS;
+        try {
+            return Integer.parseInt(value) > 0 ? SymbolTypeEnum.BONUS : SymbolTypeEnum.MALUS;
         } catch (NumberFormatException e) {
             return SymbolTypeEnum.NONE;
         }

@@ -30,4 +30,6 @@ public class CharacteristicsEntity extends CommonEntity{
     private Boolean builtIn;
     @OneToOne(mappedBy = "characteristic")
     private RaceCharacteristicsEntity raceCharacteristicsEntity;
+    @Column(name = "short_description", nullable = false)
+    private String shortDescription;
 }

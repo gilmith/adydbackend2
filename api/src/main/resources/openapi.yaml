@@ -554,7 +554,7 @@ components:
       required:
         - name
         - code
-        - description
+        - shortDescription
         - type
         - value
       properties:
@@ -563,6 +563,8 @@ components:
         name:
           type: string
         value:
+          type: string
+        shortDescription:
           type: string
         description:
           type: string

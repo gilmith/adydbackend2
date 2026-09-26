@@ -3,6 +3,7 @@ package org.jacobo.adyd.infraestructure.adapter;
 
 import lombok.RequiredArgsConstructor;
 import org.jacobo.adyd.domain.model.CharacteristicModel;
+import org.jacobo.adyd.domain.model.RaceModel;
 import org.jacobo.adyd.domain.repository.CharacteristicRepository;
 import org.jacobo.adyd.infraestructure.mapper.CharacteristicMapper;
 import org.jacobo.adyd.infraestructure.persistence.CharacteristicJpaRepository;
@@ -36,5 +37,10 @@ public class CharacteristicRepositoryAdapter implements CharacteristicRepository
     @Override
     public Optional<CharacteristicModel> findByCodeAndRace(String code, Long raceId) {
         return characteristicJpaRepository.findByCodeAndRace(code, raceId).map(characteristicMapper::toCharacteristic);
+    }
+
+    @Override
+    public CharacteristicModel saveNewCharacteristic(CharacteristicModel characteristicModel, RaceModel raceModel) {
+        return characteristicMapper.toCharacteristic(characteristicJpaRepository.save(characteristicMapper.toEntity(characteristicModel)));
     }
 }
