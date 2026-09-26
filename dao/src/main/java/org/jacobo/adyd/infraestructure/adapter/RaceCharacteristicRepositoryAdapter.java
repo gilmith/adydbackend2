@@ -28,7 +28,7 @@ public class RaceCharacteristicRepositoryAdapter implements RaceCharacteristicRe
     @Override
     @Transactional
     public RaceCharacteristicModel save(RaceCharacteristicModel raceCharacteristicModel) {
-        return raceCharacteristicMapper.toModel(
+        return raceCharacteristicMapper.toRaceModel(
                 raceCharacteristicJpaRepository.save(raceCharacteristicMapper.toEntity(raceCharacteristicModel)));
     }
 
@@ -43,6 +43,12 @@ public class RaceCharacteristicRepositoryAdapter implements RaceCharacteristicRe
                 RaceCharacteristicsEntity::getRace,
                 Collectors.toList()
         ));
-        return raceCharacteristicMapper.mapToModel(raceEntityListMap, raceMapper, characteristicMapper);
+        return raceCharacteristicMapper.mapToModel(raceEntityListMap);
+    }
+
+    @Override
+    public RaceCharacteristicModel findByRaceIdAndCharacteristicId(Long raceId, Long characteristicId) {
+        return raceCharacteristicMapper.toRaceModel(
+                raceCharacteristicJpaRepository.findByRaceIdAndCharacteristicId(raceId, characteristicId));
     }
 }

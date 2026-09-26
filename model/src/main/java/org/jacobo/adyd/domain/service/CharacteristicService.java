@@ -12,4 +12,6 @@ public interface CharacteristicService {
     Optional<CharacteristicModel> findByCode(String code);
 
     List<String> getBuiltInCharacteristics();
+
+    CharacteristicModel updateCharacteristic(Long raceId, Long characteristicId, CharacteristicModel model);
 }

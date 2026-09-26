@@ -1,18 +1,21 @@
 package org.jacobo.adyd.infraestructure.mapper;
 
 import org.jacobo.adyd.api.dto.CharacteristicDto;
+import org.jacobo.adyd.api.dto.CharacteristicToModifyDto;
 import org.jacobo.adyd.domain.model.CharacteristicModel;
 import org.jacobo.adyd.domain.model.SymbolTypeEnum;
 import org.jacobo.adyd.domain.model.TypeValueEnum;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface CharacteristicDtoMapper {
 
     CharacteristicDto toDto(CharacteristicModel characteristic);
 
     CharacteristicModel toModel(CharacteristicDto characteristicDto);
+
+    CharacteristicModel toModel(CharacteristicToModifyDto characteristicDto);
 
     default TypeValueEnum map(CharacteristicDto.TypeEnum type) {
         return type == null ? null : TypeValueEnum.valueOf(type.name());

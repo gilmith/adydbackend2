@@ -10,4 +10,7 @@ public interface RaceCharacteristicJpaRepository extends JpaRepository<RaceChara
 
     @Query("SELECT rc FROM RaceCharacteristicsEntity rc WHERE rc.race.id = :raceId")
     List<RaceCharacteristicsEntity> findAllByRaceId(Long raceId);
+
+    @Query("SELECT rc FROM RaceCharacteristicsEntity rc WHERE rc.race.id = :raceId AND rc.characteristic.id = :characteristicId")
+    RaceCharacteristicsEntity findByRaceIdAndCharacteristicId(Long raceId, Long characteristicId);
 }

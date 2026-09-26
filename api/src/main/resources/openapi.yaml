@@ -52,12 +52,7 @@ paths:
       tags:
         - campaign-controller
       parameters:
-        - name: campaignId
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
+        - $ref: '#/components/parameters/campaignId'
       responses:
         200:
           description: OK
@@ -109,12 +104,7 @@ paths:
       tags:
         - campaign-controller
       parameters:
-        - name: campaignId
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
+        - $ref: '#/components/parameters/campaignId'
       responses:
         200:
           description: ok
@@ -129,12 +119,7 @@ paths:
       tags:
         - campaign-controller
       parameters:
-        - name: campaignId
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
+        - $ref: '#/components/parameters/campaignId'
       responses:
         200:
           description: ok
@@ -175,18 +160,8 @@ paths:
       tags:
         - campaign-controller
       parameters:
-        - name: campaignId
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-        - name: raceId
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
+        - $ref: '#/components/parameters/campaignId'
+        - $ref: '#/components/parameters/raceId'
       responses:
         202:
           description: accepted
@@ -263,12 +238,7 @@ paths:
       tags:
         - race-controller
       parameters:
-        - name: raceId
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
+        - $ref: '#/components/parameters/raceId'
       responses:
         204:
           description: No Content
@@ -347,12 +317,7 @@ paths:
       tags:
         - race-characteristic-controller
       parameters:
-        - name: raceId
-          in: path
-          schema:
-            type: integer
-            format: int64
-          required: true
+        - $ref: '#/components/parameters/raceId'
       requestBody:
         required: true
         content:
@@ -368,6 +333,28 @@ paths:
                 $ref: '#/components/schemas/RaceDto'
         404:
           description: Not found
+  /race/{raceId}/characteristic/{characteristicId}:
+    patch:
+      summary: update race characteristic
+      operationId: updateRaceCharacteristic
+      tags:
+        - race-characteristic-controller
+      parameters:
+        - $ref: '#/components/parameters/raceId'
+        - $ref: '#/components/parameters/characteristicId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CharacteristicToModifyDto'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CharacteristicDto'
   /race/builtin:
     get:
       summary: get built in characteristics name
@@ -400,7 +387,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CharacteristicDto'
-
   /player-class:
     get:
       summary: get all player class
@@ -447,13 +433,7 @@ paths:
       tags:
         - player-class-controller
       parameters:
-        - name: playerClassId
-          in: path
-          required: true
-          description: player class id
-          schema:
-            type: integer
-            format: int64
+        - $ref: '#/components/parameters/playerClassId'
       responses:
         200:
           description: OK
@@ -549,6 +529,34 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/CharacteristicDto'
+    CharacteristicToModifyDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        code:
+          type: string
+        name:
+          type: string
+        value:
+          type: string
+        shortDescription:
+          type: string
+        description:
+          type: string
+        type:
+          type: string
+          enum:
+            - STRING
+            - INTEGER
+            - BOOLEAN
+        symbol:
+          type: string
+          enum:
+            - BONUS
+            - MALUS
+            - NONE
     CharacteristicDto:
       type: object
       required:
@@ -558,6 +566,9 @@ components:
         - type
         - value
       properties:
+        id:
+          type: integer
+          format: int64
         code:
           type: string
         name:
@@ -599,3 +610,37 @@ components:
       properties:
         message:
           type: string
+    ConflictDto:
+      type: object
+      properties:
+        message:
+          type: string
+  parameters:
+    raceId:
+      name: raceId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+    campaignId:
+      name: campaignId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+    playerClassId:
+      name: playerClassId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+    characteristicId:
+      name: characteristicId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
