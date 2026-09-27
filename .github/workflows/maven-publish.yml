@@ -1,4 +1,4 @@
-name: Publish to GitHub Packages and Releases
+name: Publish to GitHub Packages and Releases (GraalVM Native)
 
 on:
   push:
@@ -6,7 +6,6 @@ on:
       - 'v*.*.*'  # Se activa al hacer push de tags
       - '*.*.*'
   workflow_dispatch:
-    # Añadimos un input para cuando lo ejecutas a mano desde la web
     inputs:
       manual_version:
         description: 'Versión a publicar (ej: 1.0.1)'
@@ -24,49 +23,64 @@ jobs:
       - name: Checkout del código
         uses: actions/checkout@v4
 
-      # 1. Lógica condicional: Si viene de un Tag lo usa; si es manual, usa el input de la web
+      # 1. Lógica condicional para obtener la versión
       - name: Resolve Version
         id: get_version
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            # Si se lanzó a mano, usamos lo que escribiste en la web (quitándole la 'v' si la pusiste)
             VERSION="${{ inputs.manual_version }}"
             VERSION="${VERSION#v}"
           else
-            # Si se lanzó por push de Tag, usamos el nombre del Tag
             VERSION="${GITHUB_REF_NAME#v}"
           fi
           echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
 
-      # 2. Configurar JDK 25 y credenciales
-      - name: Set up JDK 25
-        uses: actions/setup-java@v4
+      # 2. Configurar GraalVM JDK con Native Image habilitado
+      - name: Set up GraalVM
+        uses: graalvm/setup-graalvm@v1
         with:
-          java-version: '25'
-          distribution: 'temurin'
+          java-version: '21'      # Cambia a '25' si tu distribución/parent POM soporta GraalVM 25
+          distribution: 'graalvm'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           cache: maven
-          server-id: github
-          settings-path: ${{ github.workspace }}
+          native-image-job-reports: 'true'
 
-      # 3. Ajustar versión dinámicamente
+      # 3. Ajustar versión dinámicamente en el pom.xml
       - name: Update POM Version
         run: mvn versions:set -DnewVersion=${{ steps.get_version.outputs.VERSION }} -DgenerateBackupPoms=false
 
-      # 4. Compilar, empaquetar y subir a GitHub Packages
-      - name: Build and Deploy to GitHub Packages
-        run: mvn clean deploy -DskipTests=false --settings ${{ github.workspace }}/settings.xml
+      # 4. Generar la imagen nativa con GraalVM y empaquetar el JAR
+      - name: Build Native Image and JAR
+        run: mvn clean package -Pnative -DskipTests=false
+
+      # 5. Desplegar el paquete/JAR a GitHub Packages
+      - name: Deploy to GitHub Packages
+        run: mvn deploy -DskipTests=true --settings ${{ github.workspace }}/settings.xml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # 5. Adjuntar el .jar a la Release
-      # Quitamos el IF restrictivo para que también genere la release al lanzarlo manual
-      - name: Upload Release Asset
+      # 6. Preparar y renombrar el binario nativo para la Release
+      - name: Prepare Native Binary
+        run: |
+          # El binario nativo resultante no tiene extensión en Linux
+          # Buscamos el ejecutable en target/ y le asignamos un nombre claro
+          APP_NAME=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)
+          cp target/${APP_NAME} target/${APP_NAME}-v${{ steps.get_version.outputs.VERSION }}-linux-x86_64
+
+      # 7. Adjuntar tanto el .jar como el binario ejecutable a la GitHub Release
+      - name: Upload Release Assets
         uses: softprops/action-gh-release@v2
         with:
-          files: target/*.jar
+          files: |
+            target/*.jar
+            target/*-linux-x86_64
           tag_name: "v${{ steps.get_version.outputs.VERSION }}"
           name: "Release v${{ steps.get_version.outputs.VERSION }}"
           body: |
-            Artefacto publicado exitosamente en GitHub Packages con versión `${{ steps.get_version.outputs.VERSION }}`.
+            Artefacto publicado exitosamente en GitHub Packages y Release con versión `${{ steps.get_version.outputs.VERSION }}`.
+            
+            **Archivos incluidos:**
+            - **JAR tradicional:** Descargable desde GitHub Packages.
+            - **Ejecutable nativo (Linux x86_64):** Incluido como asset directo en esta Release.
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
