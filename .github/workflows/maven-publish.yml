@@ -46,15 +46,24 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Token automático proporcionado por GitHub
 
-      # 5. Adjuntar el .jar compilado directamente en la Release de GitHub
+      # 5. Empaquetar el cliente Angular generado en el build
+      - name: Package Angular Client
+        run: |
+          tar -czf client-angular-${{ steps.get_version.outputs.VERSION }}.tar.gz -C target/generated-clients/angular .
+
+      # 6. Adjuntar el .jar compilado y el cliente Angular en la Release de GitHub
       - name: Upload Release Asset
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: target/*.jar
+          files: |
+            target/*.jar
+            client-angular-${{ steps.get_version.outputs.VERSION }}.tar.gz
           tag_name: ${{ github.ref_name }}
           name: Release ${{ github.ref_name }}
           body: |
             Artefacto publicado exitosamente en GitHub Packages con versión `${{ steps.get_version.outputs.VERSION }}`.
+            - Cliente Java publicado en GitHub Packages
+            - Cliente Angular (typescript-angular, ng 22) adjunto como `client-angular-${{ steps.get_version.outputs.VERSION }}.tar.gz`
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
