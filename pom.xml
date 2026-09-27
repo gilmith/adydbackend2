@@ -41,6 +41,7 @@
         <swagger.version>2.2.43</swagger.version>
         <spring-boot.version>4.1.1</spring-boot.version>
         <postgresql.version>42.7.12</postgresql.version>
+        <openapi-generator.version>7.25.0</openapi-generator.version>
     </properties>
 
     <dependencyManagement>
@@ -146,6 +147,31 @@
                 </plugin>
             </plugins>
         </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.openapitools</groupId>
+                <artifactId>openapi-generator-maven-plugin</artifactId>
+                <version>${openapi-generator.version}</version>
+                <executions>
+                    <execution>
+                        <id>generate-angular-client</id>
+                        <inherited>false</inherited>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/api/src/main/resources/openapi.yaml</inputSpec>
+                            <generatorName>typescript-angular</generatorName>
+                            <output>${project.basedir}/target/generated-clients/angular</output>
+                            <configOptions>
+                                <ngVersion>22.0.0</ngVersion>
+                                <providedIn>root</providedIn>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
     </build>
 
 </project>
