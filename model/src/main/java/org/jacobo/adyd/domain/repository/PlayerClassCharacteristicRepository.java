@@ -6,4 +6,6 @@ public interface PlayerClassCharacteristicRepository {
 
     PlayerClassCharacteristicModel save(PlayerClassCharacteristicModel playerClassCharacteristicModel);
 
+    PlayerClassCharacteristicModel findByPlayerClassId(Long playerClassId);
+
 }

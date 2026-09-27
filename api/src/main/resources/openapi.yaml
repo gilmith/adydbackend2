@@ -494,7 +494,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PlayerClassCharacteristicDto'
+                $ref: '#/components/schemas/CharacteristicDto'
 components:
   schemas:
     PlayerClassDto:

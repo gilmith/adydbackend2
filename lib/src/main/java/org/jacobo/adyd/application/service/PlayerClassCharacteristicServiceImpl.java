@@ -17,4 +17,9 @@ public class PlayerClassCharacteristicServiceImpl implements PlayerClassCharacte
     public PlayerClassCharacteristicModel save(PlayerClassCharacteristicModel playerClassCharacteristic) {
         return playerCharacteristicRepository.save(playerClassCharacteristic);
     }
+
+    @Override
+    public PlayerClassCharacteristicModel getPlayerClassCharacteristics(Long playerClassId) {
+        return playerCharacteristicRepository.findByPlayerClassId(playerClassId);
+    }
 }
