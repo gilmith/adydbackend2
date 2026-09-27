@@ -24,4 +24,8 @@ public class PlayerClassEntity extends CommonEntity {
 
     @ManyToMany(mappedBy = "playerClasses", fetch = FetchType.LAZY)
     private Set<CampaignEntity> campaigns;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_player_class")
+    private Set<PlayerClassCharacteristicEntity> playerClassCharacteristicEntities;
 }

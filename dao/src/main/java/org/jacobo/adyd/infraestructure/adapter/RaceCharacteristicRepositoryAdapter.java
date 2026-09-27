@@ -7,9 +7,7 @@ import org.jacobo.adyd.domain.exception.NotFoundRunTimeException;
 import org.jacobo.adyd.domain.model.RaceCharacteristicModel;
 import org.jacobo.adyd.domain.repository.RaceCharacteristicRepository;
 import org.jacobo.adyd.infraestructure.entities.RaceCharacteristicsEntity;
-import org.jacobo.adyd.infraestructure.mapper.CharacteristicMapper;
 import org.jacobo.adyd.infraestructure.mapper.RaceCharacteristicMapper;
-import org.jacobo.adyd.infraestructure.mapper.RaceMapper;
 import org.jacobo.adyd.infraestructure.persistence.RaceCharacteristicJpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,8 +20,6 @@ public class RaceCharacteristicRepositoryAdapter implements RaceCharacteristicRe
 
     private final RaceCharacteristicJpaRepository raceCharacteristicJpaRepository;
     private final RaceCharacteristicMapper raceCharacteristicMapper;
-    private final CharacteristicMapper characteristicMapper;
-    private final RaceMapper raceMapper;
 
     @Override
     @Transactional

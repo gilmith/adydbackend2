@@ -1,0 +1,28 @@
+@startuml get-all-races
+title GET /race — getAllRaces
+' Capas: Web(controller) -> Aplicación(serviceImpl) -> Puerto(repository) -> Infraestructura(Jpa/Mapper/Entity) -> Dominio(Model)
+
+actor Cliente
+participant "RaceController" as RC
+participant "RaceServiceImpl\n(implements RaceService)" as RS
+participant "RaceRepositoryAdapter\n(implements RaceRepository)" as RA
+participant "RaceJpaRepository" as RJ
+participant "RaceMapper" as RM
+participant "RaceDtoMapper" as RDM
+
+Cliente -> RC : GET /race
+RC -> RS : getAllRaces()
+RS -> RA : findAll()
+RA -> RJ : findAll()
+RJ --> RA : List<RaceEntity>
+loop para cada raceEntity
+    RA -> RM : toDomain(raceEntity)
+    RM --> RA : RaceModel
+end
+RA --> RS : List<RaceModel>
+RS --> RC : List<RaceModel>
+RC -> RDM : toDto(List<RaceModel>)
+RDM --> RC : List<RaceDto>
+RC --> Cliente : 200 OK [List<RaceDto>]
+
+@enduml

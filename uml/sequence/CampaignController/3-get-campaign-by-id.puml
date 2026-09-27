@@ -1,0 +1,32 @@
+@startuml get-campaign-by-id
+title GET /campaign/{campaignId} — getCampaignById
+' Capas: Web(controller) -> Aplicación(serviceImpl) -> Puerto(repository) -> Infraestructura(Jpa/Mapper/Entity) -> Dominio(Model)
+
+actor Cliente
+participant "CampaignController" as CC
+participant "CampaignServiceImpl\n(implements CampaignService)" as CS
+participant "CampaignRepositoryAdapter\n(implements CampaignRepository)" as CA
+participant "CampaignJpaRepository" as CJ
+participant "CampaignMapper" as CM
+participant "CampaignDtoMapper" as CDM
+participant "GlobalExceptionHandler" as GEH
+
+Cliente -> CC : GET /campaign/{campaignId}
+CC -> CS : findById(campaignId)
+CS -> CA : findById(campaignId)
+CA -> CJ : findById(campaignId)
+CJ --> CA : Optional<CampaignEntity>
+CA -> CM : toDomain(entity)
+CM --> CA : CampaignModel
+CA --> CS : Optional<CampaignModel>
+alt optional vacío
+    CS -> GEH : throw NotFoundRunTimeException("Campaign not found")
+    GEH --> Cliente : 404 NotFoundDto
+else present
+    CS --> CC : CampaignModel
+    CC -> CDM : toDto(campaignModel)
+    CDM --> CC : CampaignDto
+    CC --> Cliente : 200 OK [CampaignDto]
+end
+
+@enduml

@@ -1,0 +1,181 @@
+@startuml class-lib
+title Capa de aplicación y web (módulo lib) — Controllers, Service impls y DTO mappers
+skinparam classAttributeIconSize 0
+
+package "org.jacobo.adyd.infraestructure.controller" {
+
+    class RaceController
+    class PlayerClassController
+    class CampaignController
+    class RaceCharacteristicController
+}
+
+package "org.jacobo.adyd.application.service" {
+
+    class RaceServiceImpl
+    class PlayerClassServiceImpl
+    class CampaignServiceImpl {
+        {method} addRaceInCampaign(Long, Long)
+        {method} addPlayerClassInCampaign(Long, Long)
+        {method} getPlayerClassForCampaign(Long)
+        {method} getRaceByCampaignId(Long)
+    }
+    class CharacteristicServiceImpl {
+        {method} createNewProperty(Long, CharacteristicModel, String)
+        {method} createNewBuiltInCharacteristic(...)
+        {method} createNewCustomCharacteristic(...)
+        {method} resolveSymbol(String)
+        {method} isBuiltIn(CharacteristicModel)
+        {method} updateCharacteristic(Long, Long, CharacteristicModel)
+    }
+    class RaceCharacteristicServiceImpl
+    class EntityExistenceServiceImpl
+}
+
+package "org.jacobo.adyd.application.service.helpers" {
+    class RaceCharacteristicHelper
+}
+
+package "org.jacobo.adyd.infraestructure.mapper" {
+    interface RaceDtoMapper {
+        RaceDto toDto(RaceModel)
+        List<RaceDto> toDto(List<RaceModel>)
+        RaceModel toModel(RaceDto)
+        RaceModel getModifiedRace(RaceModel, RaceModel)
+    }
+    interface PlayerClassDtoMapper {
+        PlayerClassModel toModel(PlayerClassDto)
+        PlayerClassDto toDto(PlayerClassModel)
+        List<PlayerClassDto> toDtoList(List<PlayerClassModel>)
+        List<PlayerClassModel> toModelList(List<PlayerClassDto>)
+    }
+    interface CampaignDtoMapper {
+        CampaignDto toDto(CampaignModel)
+        List<CampaignDto> toDto(List<CampaignModel>)
+        CampaignModel toModel(CampaignDto)
+        CampaignModel getModifiedCampaignModel(CampaignModel, CampaignModel)
+        CampaignRaceDto toCampaignRaceDto(CampaignRaceModel)
+        CampaignPlayerClassDto toCampaignPlayerClassDto(CampaignPlayerClassModel)
+    }
+    interface CharacteristicDtoMapper {
+        CharacteristicDto toDto(CharacteristicModel)
+        CharacteristicModel toModel(CharacteristicDto)
+        CharacteristicModel toModel(CharacteristicToModifyDto)
+    }
+    interface RaceCharacteristicDtoMapper {
+        RaceCharacteristicDto toDto(RaceCharacteristicModel)
+    }
+}
+
+package "org.jacobo.adyd.api" {
+    interface RaceControllerApi
+    interface PlayerClassControllerApi
+    interface CampaignControllerApi
+    interface RaceCharacteristicControllerApi
+}
+
+package "org.jacobo.adyd.domain.service" {
+    interface "RaceService" as domRaceSvc
+    interface "PlayerClassService" as domPlayerClassSvc
+    interface "CampaignService" as domCampaignSvc
+    interface "CharacteristicService" as domCharacteristicSvc
+    interface "RaceCharacteristicService" as domRaceCharacteristicSvc
+    interface "EntityExistenceService" as domEntityExistenceSvc
+    interface "EntityExistenceChecker" as domEntityExistenceChecker
+}
+
+package "org.jacobo.adyd.domain.repository" {
+    interface "RaceRepository" as domRaceRepo
+    interface "PlayerClassRepository" as domPlayerClassRepo
+    interface "CampaignRepository" as domCampaignRepo
+    interface "CharacteristicRepository" as domCharacteristicRepo
+    interface "RaceCharacteristicRepository" as domRaceCharacteristicRepo
+}
+
+package "org.jacobo.adyd.infraestructure.mapper.dao" {
+    interface "CharacteristicMapper (dao)" as daoCharacteristicMapper
+}
+
+package "org.jacobo.adyd.domain.model" {
+    class "RaceModel" as domRaceModel
+    class "PlayerClassModel" as domPlayerClassModel
+    class "CampaignModel" as domCampaignModel
+    class "CharacteristicModel" as domCharacteristicModel
+    class "RaceCharacteristicModel" as domRaceCharacteristicModel
+    class "CampaignRaceModel" as domCampaignRaceModel
+    class "CampaignPlayerClassModel" as domCampaignPlayerClassModel
+}
+
+' --- Controllers: implementan la API generada ---
+RaceController ..|> RaceControllerApi
+PlayerClassController ..|> PlayerClassControllerApi
+CampaignController ..|> CampaignControllerApi
+RaceCharacteristicController ..|> RaceCharacteristicControllerApi
+
+' --- Controllers → services (puertos) ---
+RaceController --> domRaceSvc
+PlayerClassController --> domPlayerClassSvc
+CampaignController --> domCampaignSvc
+RaceCharacteristicController --> domCharacteristicSvc
+RaceCharacteristicController --> domRaceCharacteristicSvc
+RaceCharacteristicController --> domRaceSvc
+
+' --- Controllers → DTO mappers ---
+RaceController --> RaceDtoMapper
+PlayerClassController --> PlayerClassDtoMapper
+CampaignController --> CampaignDtoMapper
+RaceCharacteristicController --> CharacteristicDtoMapper
+RaceCharacteristicController --> RaceCharacteristicDtoMapper
+RaceCharacteristicController --> RaceDtoMapper
+
+' --- Service Impl: implementan los services del dominio ---
+RaceServiceImpl ..|> domRaceSvc
+PlayerClassServiceImpl ..|> domPlayerClassSvc
+CampaignServiceImpl ..|> domCampaignSvc
+CharacteristicServiceImpl ..|> domCharacteristicSvc
+RaceCharacteristicServiceImpl ..|> domRaceCharacteristicSvc
+EntityExistenceServiceImpl ..|> domEntityExistenceSvc
+EntityExistenceServiceImpl ..|> domEntityExistenceChecker
+
+' --- Service Impl → repositories del dominio ---
+RaceServiceImpl --> domRaceRepo
+PlayerClassServiceImpl --> domPlayerClassRepo
+CampaignServiceImpl --> domCampaignRepo
+CampaignServiceImpl --> domRaceRepo
+CampaignServiceImpl --> domPlayerClassRepo
+CharacteristicServiceImpl --> domCharacteristicRepo
+CharacteristicServiceImpl --> domRaceCharacteristicSvc
+CharacteristicServiceImpl --> domRaceSvc
+CharacteristicServiceImpl --> daoCharacteristicMapper
+RaceCharacteristicServiceImpl --> domRaceCharacteristicRepo
+
+' --- Service Impl → DTO mappers (para combinar modelos) ---
+RaceServiceImpl --> RaceDtoMapper
+CharacteristicServiceImpl --> daoCharacteristicMapper
+
+' --- DTO mappers → modelos del dominio / DTOs api ---
+RaceDtoMapper ..> RaceDto
+RaceDtoMapper ..> domRaceModel
+PlayerClassDtoMapper ..> PlayerClassDto
+PlayerClassDtoMapper ..> domPlayerClassModel
+CampaignDtoMapper ..> CampaignDto
+CampaignDtoMapper ..> domCampaignModel
+CampaignDtoMapper ..> domCampaignRaceModel
+CampaignDtoMapper ..> domCampaignPlayerClassModel
+CampaignDtoMapper ..> RaceDtoMapper : uses
+CampaignDtoMapper ..> PlayerClassDtoMapper : uses
+CharacteristicDtoMapper ..> CharacteristicDto
+CharacteristicDtoMapper ..> CharacteristicToModifyDto
+CharacteristicDtoMapper ..> domCharacteristicModel
+RaceCharacteristicDtoMapper ..> RaceCharacteristicDto
+RaceCharacteristicDtoMapper ..> domRaceCharacteristicModel
+RaceCharacteristicDtoMapper ..> RaceDtoMapper : uses
+RaceCharacteristicDtoMapper ..> CharacteristicDtoMapper : uses
+
+note top of CharacteristicServiceImpl
+  createNewBuiltInCharacteristic usa BuiltInCharacteristicsEnum.valueOf(code):
+  falla (500) si llega un code canónico sin sufijo _RACE.
+  resolveSymbol: parseInt>0 -> BONUS, parseInt<0 -> MALUS, no numérico -> NONE
+end note
+
+@enduml

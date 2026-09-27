@@ -1,0 +1,26 @@
+@startuml get-all-campaigns
+title GET /campaign — getAllCampaign
+' Capas: Web(controller) -> Aplicación(serviceImpl) -> Puerto(repository) -> Infraestructura(Jpa/Mapper/Entity) -> Dominio(Model)
+
+actor Cliente
+participant "CampaignController" as CC
+participant "CampaignServiceImpl\n(implements CampaignService)" as CS
+participant "CampaignRepositoryAdapter\n(implements CampaignRepository)" as CA
+participant "CampaignJpaRepository" as CJ
+participant "CampaignMapper" as CM
+participant "CampaignDtoMapper" as CDM
+
+Cliente -> CC : GET /campaign
+CC -> CS : findAll()
+CS -> CA : findAll()
+CA -> CJ : findAll()
+CJ --> CA : List<CampaignEntity>
+CA -> CM : toDomain(List<CampaignEntity>)
+CM --> CA : List<CampaignModel>
+CA --> CS : List<CampaignModel>
+CS --> CC : List<CampaignModel>
+CC -> CDM : toDto(List<CampaignModel>)
+CDM --> CC : List<CampaignDto>
+CC --> Cliente : 200 OK [List<CampaignDto>]
+
+@enduml

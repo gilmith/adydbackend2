@@ -1,0 +1,229 @@
+@startuml class-dao
+title Capa de persistencia (módulo dao) — Entities, JPA repos, projections, mappers y adapters
+skinparam classAttributeIconSize 0
+
+package "org.jacobo.adyd.infraestructure.entities" {
+
+    abstract class CommonEntity {
+        Long id
+        LocalDateTime createDate
+        LocalDateTime updatedDate
+        String createUser
+        String updateUser
+        {method} prePersist()
+    }
+
+    class RaceEntity {
+        String name
+        Set<CampaignEntity> campaigns
+        Set<RaceCharacteristicsEntity> raceCharacteristicEntities
+    }
+
+    class PlayerClassEntity {
+        String name
+        String hitDice
+        Set<CampaignEntity> campaigns
+    }
+
+    class CampaignEntity {
+        String name
+        Set<PlayerClassEntity> playerClasses
+        Set<RaceEntity> raceEntities
+    }
+
+    class CharacteristicsEntity {
+        String code
+        String name
+        String description
+        TypeValueEnum type
+        Boolean builtIn
+        String shortDescription
+        RaceCharacteristicsEntity raceCharacteristicsEntity
+    }
+
+    class RaceCharacteristicsEntity {
+        RaceEntity race
+        Long idPattern
+        CharacteristicsEntity characteristic
+        String value
+        SymbolTypeEnum symbol
+    }
+
+    class SymbolTypeEnumConverter {
+        {method} convertToDatabaseColumn(SymbolTypeEnum)
+        {method} convertToEntityAttribute(String)
+    }
+}
+
+package "org.jacobo.adyd.infraestructure.projection" {
+    interface CampaignRaceProjection {
+        String getCampaignName()
+        String getRaceName()
+        Long getRaceId()
+    }
+    interface CampaignPlayerClassProjection {
+        String getCampaignName()
+        String getPlayerClassName()
+        Long getPlayerClassId()
+        String getHitDice()
+    }
+}
+
+package "org.jacobo.adyd.infraestructure.persistence" {
+    interface RaceJpaRepository <<JpaRepository<RaceEntity, Long>>
+    interface PlayerClassJpaRepository <<JpaRepository<PlayerClassEntity, Long>>
+    interface CampaignJpaRepository <<JpaRepository<CampaignEntity, Long>> {
+        List<CampaignRaceProjection> findAllRacesByCampaignId(Long)
+        List<CampaignPlayerClassProjection> findAllPlayerClassForCampaign(Long)
+        void deleteCampaignEntitiesByRaceEntities(Set<RaceEntity>)
+    }
+    interface CharacteristicJpaRepository <<JpaRepository<CharacteristicsEntity, Long>> {
+        Optional<CharacteristicsEntity> findByCode(String)
+        Optional<CharacteristicsEntity> findByCodeAndRace(String, Long)
+    }
+    interface RaceCharacteristicJpaRepository <<JpaRepository<RaceCharacteristicsEntity, Long>> {
+        List<RaceCharacteristicsEntity> findAllByRaceId(Long)
+        RaceCharacteristicsEntity findByRaceIdAndCharacteristicId(Long, Long)
+    }
+    interface RaceCharacteristicsJpaRepository <<JpaRepository<CharacteristicsEntity, Long>>
+}
+
+package "org.jacobo.adyd.infraestructure.mapper" {
+    interface RaceMapper {
+        RaceModel toDomain(RaceEntity)
+        RaceEntity toEntity(RaceModel)
+    }
+    interface PlayerClassMapper {
+        PlayerClassModel toDomain(PlayerClassEntity)
+        PlayerClassEntity toEntity(PlayerClassModel)
+    }
+    interface CharacteristicMapper {
+        CharacteristicsEntity toEntity(CharacteristicModel)
+        CharacteristicModel toCharacteristic(CharacteristicsEntity)
+        List<CharacteristicModel> toCharacteristicList(List<CharacteristicsEntity>)
+        CharacteristicModel copyValues(CharacteristicModel, CharacteristicModel)
+    }
+    interface CampaignMapper {
+        CampaignModel toDomain(CampaignEntity)
+        List<CampaignModel> toDomain(List<CampaignEntity>)
+        CampaignEntity toEntity(CampaignModel)
+        CampaignPlayerClassModel projectionToDomain(List<CampaignPlayerClassProjection>)
+        CampaignRaceModel raceProjectionToDoman(List<CampaignRaceProjection>)
+    }
+    interface RaceCharacteristicMapper {
+        RaceCharacteristicsEntity toEntity(RaceCharacteristicModel)
+        RaceCharacteristicModel toRaceModel(RaceCharacteristicsEntity)
+        List<RaceCharacteristicModel> toRaceModel(List<RaceCharacteristicsEntity>)
+        List<RaceCharacteristicsEntity> toEntity(List<RaceCharacteristicModel>)
+        CharacteristicModel toCharacteristicModel(RaceCharacteristicsEntity)
+        RaceCharacteristicModel mapToModel(Map<RaceEntity, List<RaceCharacteristicsEntity>>)
+    }
+}
+
+package "org.jacobo.adyd.infraestructure.adapter" {
+
+    class RaceRepositoryAdapter
+    class PlayerClassRepositoryAdapter
+    class CampaignRepositoryAdapter
+    class CharacteristicRepositoryAdapter
+    class RaceCharacteristicRepositoryAdapter {
+        {method} save(RaceCharacteristicModel)
+        {method} findByRaceId(Long) ' agrupa por RaceEntity con groupingBy
+        {method} findByRaceIdAndCharacteristicId(Long, Long)
+    }
+}
+
+package "org.jacobo.adyd.domain" {
+    ' puertos que implementan los adapters
+    interface "RaceRepository" as portRace
+    interface "PlayerClassRepository" as portPlayerClass
+    interface "CampaignRepository" as portCampaign
+    interface "CharacteristicRepository" as portCharacteristic
+    interface "RaceCharacteristicRepository" as portRaceCharacteristic
+    class "RaceModel" as domRace
+    class "PlayerClassModel" as domPlayerClass
+    class "CampaignModel" as domCampaign
+    class "CharacteristicModel" as domCharacteristic
+    class "RaceCharacteristicModel" as domRaceCharacteristic
+    enum "TypeValueEnum" as domType
+    enum "SymbolTypeEnum" as domSymbol
+}
+
+' --- Entities: herencia y relaciones ---
+RaceEntity --|> CommonEntity
+PlayerClassEntity --|> CommonEntity
+CampaignEntity --|> CommonEntity
+CharacteristicsEntity --|> CommonEntity
+RaceCharacteristicsEntity --|> CommonEntity
+
+RaceEntity "1" o-- "many" RaceCharacteristicsEntity : raceCharacteristicEntities (OneToMany)
+RaceCharacteristicsEntity "many" o-- "1" RaceEntity : race (ManyToOne)
+RaceCharacteristicsEntity "many" o-- "1" CharacteristicsEntity : characteristic (OneToOne)
+CharacteristicsEntity "1" o-- "0..1" RaceCharacteristicsEntity : raceCharacteristicsEntity (mappedBy)
+CampaignEntity "1" *-- "many" PlayerClassEntity : playerClasses (JoinTable campaign_player_class)
+CampaignEntity "1" *-- "many" RaceEntity : raceEntities (JoinTable race_campaign)
+PlayerClassEntity o-- "many" CampaignEntity : campaigns (inverse)
+RaceEntity o-- "many" CampaignEntity : campaigns (inverse)
+RaceCharacteristicsEntity ..> domSymbol : symbol
+SymbolTypeEnumConverter ..> domSymbol : <<AttributeConverter>>
+
+' --- JPA repos → entity ---
+RaceJpaRepository ..> RaceEntity
+PlayerClassJpaRepository ..> PlayerClassEntity
+CampaignJpaRepository ..> CampaignEntity
+CharacteristicJpaRepository ..> CharacteristicsEntity
+RaceCharacteristicJpaRepository ..> RaceCharacteristicsEntity
+RaceCharacteristicsJpaRepository ..> CharacteristicsEntity
+CampaignJpaRepository ..> CampaignRaceProjection : JPQL
+CampaignJpaRepository ..> CampaignPlayerClassProjection : JPQL
+
+' --- Adapters: implementan puertos del dominio ---
+RaceRepositoryAdapter ..|> portRace
+PlayerClassRepositoryAdapter ..|> portPlayerClass
+CampaignRepositoryAdapter ..|> portCampaign
+CharacteristicRepositoryAdapter ..|> portCharacteristic
+RaceCharacteristicRepositoryAdapter ..|> portRaceCharacteristic
+
+' --- Adapters → JPA repos ---
+RaceRepositoryAdapter --> RaceJpaRepository
+PlayerClassRepositoryAdapter --> PlayerClassJpaRepository
+CampaignRepositoryAdapter --> CampaignJpaRepository
+CharacteristicRepositoryAdapter --> CharacteristicJpaRepository
+RaceCharacteristicRepositoryAdapter --> RaceCharacteristicJpaRepository
+
+' --- Adapters → mappers ---
+RaceRepositoryAdapter --> RaceMapper
+PlayerClassRepositoryAdapter --> PlayerClassMapper
+CampaignRepositoryAdapter --> CampaignMapper
+CharacteristicRepositoryAdapter --> CharacteristicMapper
+RaceCharacteristicRepositoryAdapter --> RaceCharacteristicMapper
+RaceCharacteristicRepositoryAdapter --> CharacteristicMapper
+RaceCharacteristicRepositoryAdapter --> RaceMapper
+
+' --- Mappers: usan entidades y modelos del dominio ---
+RaceMapper ..> RaceEntity
+RaceMapper ..> domRace
+PlayerClassMapper ..> PlayerClassEntity
+PlayerClassMapper ..> domPlayerClass
+CampaignMapper ..> CampaignEntity
+CampaignMapper ..> domCampaign
+CampaignMapper ..> domRace
+CampaignMapper ..> domPlayerClass
+CampaignMapper ..> CampaignRaceProjection
+CampaignMapper ..> CampaignPlayerClassProjection
+CampaignMapper ..> RaceMapper : uses
+CharacteristicMapper ..> CharacteristicsEntity
+CharacteristicMapper ..> domCharacteristic
+CharacteristicMapper ..> domType
+RaceCharacteristicMapper ..> RaceCharacteristicsEntity
+RaceCharacteristicMapper ..> domRaceCharacteristic
+RaceCharacteristicMapper ..> domCharacteristic
+RaceCharacteristicMapper ..> RaceMapper : uses
+RaceCharacteristicMapper ..> CharacteristicMapper : uses
+
+note bottom of RaceCharacteristicRepositoryAdapter
+  findByRaceId: hace groupingBy(RaceCharacteristicsEntity::getRace)
+  y delega en RaceCharacteristicMapper.mapToModel(Map<RaceEntity, List<RaceCharacteristicsEntity>>)
+end note
+
+@enduml

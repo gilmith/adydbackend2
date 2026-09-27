@@ -1,0 +1,35 @@
+@startuml get-player-class-for-campaign
+title GET /campaign/{campaignId}/player-class — getPlayerClassForCampaign (proyección agrupada)
+' Capas: Web(controller) -> Aplicación(serviceImpl) -> Puerto(repository) -> Infraestructura(JPQL/proyección/Mapper) -> Dominio(Model)
+
+actor Cliente
+participant "CampaignController" as CC
+participant "CampaignServiceImpl\n(implements CampaignService)" as CS
+participant "CampaignRepositoryAdapter\n(implements CampaignRepository)" as CA
+participant "CampaignJpaRepository" as CJ
+participant "CampaignMapper" as CM
+participant "CampaignDtoMapper" as CDM
+participant "GlobalExceptionHandler" as GEH
+
+Cliente -> CC : GET /campaign/{campaignId}/player-class
+CC -> CS : getPlayerClassForCampaign(campaignId)
+CS -> CA : findPlayerClassForCampaign(campaignId)
+CA -> CJ : findAllPlayerClassForCampaign(campaignId)  ' JPQL: SELECT c.name, p.name, p.id, p.hitDice
+CJ --> CA : List<CampaignPlayerClassProjection>
+alt lista vacía
+    CA --> CS : Optional.empty()
+    CS -> GEH : throw NotFoundRunTimeException("Campaign not found")
+    GEH --> Cliente : 404 NotFoundDto
+else hay proyecciones
+    CA -> CM : projectionToDomain(projections)
+    CM -> CM : groupingBy(getCampaignName) -> Map<String, List<PlayerClassModel>>
+    CM -> CM : toPlayerClassModel(proyección) -> PlayerClassModel{id, name, hitDice}
+    CM --> CA : CampaignPlayerClassModel{campaign, playerClass}
+    CA --> CS : Optional<CampaignPlayerClassModel>
+    CS --> CC : CampaignPlayerClassModel
+    CC -> CDM : toCampaignPlayerClassDto(campaignPlayerClassModel)
+    CDM --> CC : CampaignPlayerClassDto
+    CC --> Cliente : 200 OK [CampaignPlayerClassDto]
+end
+
+@enduml

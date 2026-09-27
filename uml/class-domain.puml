@@ -1,0 +1,234 @@
+@startuml class-domain
+title Capa de dominio (módulo model) — Modelos, enums, puertos (repository/service) y excepciones
+skinparam classAttributeIconSize 0
+
+package "org.jacobo.adyd.domain.model" {
+
+    abstract class BaseModel {
+        Long id
+        LocalDateTime createDate
+        String createUser
+        LocalDateTime updateDate
+        String updateUser
+    }
+
+    class RaceModel {
+        Long id
+        String name
+    }
+
+    class PlayerClassModel {
+        Long id
+        String name
+        String hitDice
+    }
+
+    class CampaignModel {
+        Long id
+        String name
+        Set<RaceModel> races
+        Set<PlayerClassModel> playerClasses
+    }
+
+    class CharacteristicModel {
+        Long id
+        String code
+        String name
+        String description
+        TypeValueEnum type
+        Boolean builtIn
+        String value
+        SymbolTypeEnum symbol
+        String shortDescription
+    }
+
+    class RaceCharacteristicModel {
+        Long id
+        RaceModel race
+        CharacteristicModel characteristic
+        List<CharacteristicModel> characteristicsList
+    }
+
+    class CampaignRaceModel {
+        String campaignName
+        List<RaceModel> races
+    }
+
+    class CampaignPlayerClassModel {
+        String campaign
+        List<PlayerClassModel> playerClass
+    }
+
+    enum TypeValueEnum {
+        INTEGER
+        STRING
+        BOOLEAN
+    }
+
+    enum SymbolTypeEnum {
+        BONUS "+"
+        MALUS "-"
+        NONE ""
+    }
+
+    enum BuiltInCharacteristicsEnum {
+        STRENGTH_MINIMUM_RACE
+        DEXTERITY_MINIMUM_RACE
+        CONSTITUTION_MINIMUM_RACE
+        INTELLIGENCE_MINIMUM_RACE
+        WISDOM_MINIMUM_RACE
+        CHARISMA_MINIMUM_RACE
+        CharacteristicModel characteristicMeta
+    }
+}
+
+package "org.jacobo.adyd.domain.repository" {
+
+    interface RaceRepository {
+        RaceModel save(RaceModel)
+        Optional<RaceModel> findById(Long)
+        List<RaceModel> findAll()
+        void deleteById(Long)
+        boolean existsById(Long)
+        long count()
+    }
+
+    interface PlayerClassRepository {
+        PlayerClassModel save(PlayerClassModel)
+        Optional<PlayerClassModel> findById(Long)
+        List<PlayerClassModel> findAll()
+        void deleteById(Long)
+        boolean existsById(Long)
+        long count()
+    }
+
+    interface CampaignRepository {
+        CampaignModel save(CampaignModel)
+        Optional<CampaignModel> findById(Long)
+        List<CampaignModel> findAll()
+        void deleteById(Long)
+        boolean existsById(Long)
+        long count()
+        Optional<CampaignRaceModel> findAllRacesByCampaignId(Long)
+        Optional<CampaignPlayerClassModel> findPlayerClassForCampaign(Long)
+    }
+
+    interface CharacteristicRepository {
+        CharacteristicModel save(CharacteristicModel)
+        Optional<CharacteristicModel> findByCode(String)
+        Optional<CharacteristicModel> findById(Long)
+        Optional<CharacteristicModel> findByCodeAndRace(String, Long)
+        CharacteristicModel saveNewCharacteristic(CharacteristicModel, RaceModel)
+    }
+
+    interface RaceCharacteristicRepository {
+        RaceCharacteristicModel save(RaceCharacteristicModel)
+        RaceCharacteristicModel findByRaceId(Long)
+        RaceCharacteristicModel findByRaceIdAndCharacteristicId(Long, Long)
+    }
+
+    interface RaceCharacteristicsRepository {
+        CharacteristicModel createNewProperty(CharacteristicModel)
+    }
+}
+
+package "org.jacobo.adyd.domain.service" {
+
+    interface RaceService {
+        List<RaceModel> getAllRaces()
+        RaceModel createNewRace(RaceModel)
+        void deleteRace(Long)
+        RaceModel getRaceById(Long)
+        RaceModel updateRace(Long, RaceModel)
+    }
+
+    interface PlayerClassService {
+        List<PlayerClassModel> getAll()
+        PlayerClassModel getById(Long)
+        void deleteById(Long)
+        PlayerClassModel createNewPlayerClass(PlayerClassModel)
+        PlayerClassModel update(PlayerClassModel)
+    }
+
+    interface CampaignService {
+        List<CampaignModel> findAll()
+        CampaignModel findById(Long)
+        CampaignModel create(CampaignModel)
+        CampaignModel update(Long, CampaignModel)
+        CampaignRaceModel findAllRacesByCampaignId(Long)
+        void deleteCampaign(Long)
+        void deleteCampaignRace(Long, Long)
+        void addRaceInCampaign(Long, Long)
+        void addPlayerClassInCampaign(Long, Long)
+        CampaignPlayerClassModel getPlayerClassForCampaign(Long)
+        CampaignRaceModel getRaceByCampaignId(Long)
+    }
+
+    interface CharacteristicService {
+        CharacteristicModel createNewProperty(Long, CharacteristicModel, String)
+        Optional<CharacteristicModel> findByCode(String)
+        List<String> getBuiltInCharacteristics()
+        CharacteristicModel updateCharacteristic(Long, Long, CharacteristicModel)
+    }
+
+    interface RaceCharacteristicService {
+        RaceCharacteristicModel save(RaceCharacteristicModel)
+        RaceCharacteristicModel getRaceById(Long)
+        RaceCharacteristicModel findRaceCharacteristicByRaceIdAndCharacteristicId(Long, Long)
+    }
+
+    interface EntityExistenceService {
+        boolean exists(EntityType, Long)
+    }
+}
+
+package "org.jacobo.adyd.domain.validator" {
+    enum EntityType {
+        RACE
+        CAMPAIGN
+        PLAYER_CLASS
+    }
+}
+
+package "org.jacobo.adyd.domain.exception" {
+    class NotFoundRunTimeException extends RuntimeException {
+        NotFoundRunTimeException(String)
+    }
+    class ConflictRunTimeException extends RuntimeException {
+        HttpStatus httpStatus
+        ConflictRunTimeException(String)
+    }
+}
+
+' --- Herencia de modelos ---
+RaceModel --|> BaseModel
+PlayerClassModel --|> BaseModel
+CampaignModel --|> BaseModel
+CharacteristicModel --|> BaseModel
+RaceCharacteristicModel --|> BaseModel
+
+' --- Relaciones entre modelos ---
+CampaignModel o-- "many" RaceModel : races
+CampaignModel o-- "many" PlayerClassModel : playerClasses
+RaceCharacteristicModel o-- "0..1" RaceModel : race
+RaceCharacteristicModel o-- "0..1" CharacteristicModel : characteristic
+RaceCharacteristicModel o-- "many" CharacteristicModel : characteristicsList
+CampaignRaceModel o-- "many" RaceModel : races
+CampaignPlayerClassModel o-- "many" PlayerClassModel : playerClass
+
+' --- Enums ---
+CharacteristicModel --> TypeValueEnum : type
+CharacteristicModel --> SymbolTypeEnum : symbol
+BuiltInCharacteristicsEnum ..> CharacteristicModel : characteristicMeta
+EntityExistenceService ..> EntityType : tipo
+
+' --- Puertos del dominio ---
+' (los implementan los adapters del módulo dao; los services los usan)
+interface "RaceService" as RS_NOTE
+note right of RS_NOTE
+  Estos interfaces son "ports" de arquitectura hexagonal.
+  Los ServiceImpl (lib) los implementan;
+  los Repository port los implementan los Adapters (dao).
+end note
+
+@enduml

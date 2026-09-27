@@ -1,0 +1,37 @@
+@startuml get-race-characteristics
+title GET /race/{raceId}/characteristic — getRaceCharacteristicsById
+' Capas: Web(controller) -> Aplicación(serviceImpl) -> Puerto(repository) -> Infraestructura(Jpa/Mapper/Entity) -> Dominio(Model)
+
+actor Cliente
+participant "RaceCharacteristicController" as RCC
+participant "RaceCharacteristicServiceImpl\n(implements RaceCharacteristicService)" as RCS
+participant "RaceCharacteristicRepositoryAdapter\n(implements RaceCharacteristicRepository)" as RCR
+participant "RaceCharacteristicJpaRepository" as RCJ
+participant "RaceCharacteristicMapper" as RCM
+participant "RaceCharacteristicDtoMapper" as RCDM
+participant "GlobalExceptionHandler" as GEH
+
+Cliente -> RCC : GET /race/{raceId}/characteristic
+RCC -> RCS : getRaceById(raceId)
+RCS -> RCR : findByRaceId(raceId)
+RCR -> RCJ : findAllByRaceId(raceId)
+RCJ --> RCR : List<RaceCharacteristicsEntity>
+alt lista vacía
+    RCR -> GEH : throw NotFoundRunTimeException("Race characteristic not found")
+    GEH --> Cliente : 404 NotFoundDto
+else hay filas
+    RCR -> RCR : groupingBy(RaceCharacteristicsEntity::getRace)
+    RCR -> RCM : mapToModel(Map<RaceEntity, List<RaceCharacteristicsEntity>>)
+    RCM -> RCM : por cada fila -> toCharacteristicModel (value y symbol desde la fila)
+    RCM -> RCM : race = toRaceModel(fila).getRace()
+    RCM --> RCR : RaceCharacteristicModel (race + characteristicsList)
+    RCR --> RCS : RaceCharacteristicModel
+    RCS --> RCC : RaceCharacteristicModel
+    RCC -> RCDM : toDto(raceCharacteristicModel)
+    RCDM -> RCDM : race <- models.race (RaceDtoMapper)
+    RCDM -> RCDM : characteristic <- models.characteristicsList (CharacteristicDtoMapper)
+    RCDM --> RCC : RaceCharacteristicDto
+    RCC --> Cliente : 200 OK [RaceCharacteristicDto]
+end
+
+@enduml

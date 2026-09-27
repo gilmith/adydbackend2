@@ -1,0 +1,40 @@
+@startuml add-race-in-campaign
+title POST /campaign/{campaignId}/race/{raceId} — addRaceInCampaign
+' Capas: Web(controller) -> Aplicación(serviceImpl) -> Puertos(repository XY) -> Infraestructura(Jpa/Mapper/Entity) -> Dominio(Model)
+
+actor Cliente
+participant "CampaignController" as CC
+participant "CampaignServiceImpl\n(implements CampaignService)" as CS
+participant "CampaignRepositoryAdapter\n(implements CampaignRepository)" as CA
+participant "RaceRepositoryAdapter\n(implements RaceRepository)" as RA
+participant "CampaignJpaRepository" as CJ
+participant "CampaignMapper" as CM
+participant "GlobalExceptionHandler" as GEH
+
+Cliente -> CC : POST /campaign/{campaignId}/race/{raceId}
+CC -> CS : addRaceInCampaign(campaignId, raceId)
+CS -> CA : findById(campaignId)
+alt campaña no existe
+    CS -> GEH : throw NotFoundRunTimeException("Campaign not found")
+    GEH --> Cliente : 404 NotFoundDto
+else campaña existe
+    CA --> CS : CampaignModel (con races)
+    CS -> RA : findById(raceId)
+    alt raza no existe
+        CS -> GEH : throw NotFoundRunTimeException("Race not found")
+        GEH --> Cliente : 404 NotFoundDto
+    else raza existe
+        RA --> CS : RaceModel
+        CS -> CS : races.add(race)
+        CS -> CS : campaign.setRaces(races)
+        CS -> CA : save(campaign)
+        CA -> CM : toEntity(campaign)
+        CA -> CJ : save(entity)  ' inserta en tabla intermedia race_campaign
+        CJ --> CA : CampaignEntity
+        CA --> CS : CampaignModel
+        CS --> CC : ok
+        CC --> Cliente : 202 Accepted (sin body)
+    end
+end
+
+@enduml

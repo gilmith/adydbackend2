@@ -1,0 +1,40 @@
+@startuml add-player-class-in-campaign
+title POST /campaign/{campaignId}/player-class/{playerClassId} — addPlayerClassInCampaign
+' Capas: Web(controller) -> Aplicación(serviceImpl) -> Puertos(repository XY) -> Infraestructura(Jpa/Mapper/Entity) -> Dominio(Model)
+
+actor Cliente
+participant "CampaignController" as CC
+participant "CampaignServiceImpl\n(implements CampaignService)" as CS
+participant "CampaignRepositoryAdapter\n(implements CampaignRepository)" as CA
+participant "PlayerClassRepositoryAdapter\n(implements PlayerClassRepository)" as PA
+participant "CampaignJpaRepository" as CJ
+participant "CampaignMapper" as CM
+participant "GlobalExceptionHandler" as GEH
+
+Cliente -> CC : POST /campaign/{campaignId}/player-class/{playerClassId}
+CC -> CS : addPlayerClassInCampaign(campaignId, playerClassId)
+CS -> CA : findById(campaignId)
+alt campaña no existe
+    CS -> GEH : throw NotFoundRunTimeException("Campaign not found")
+    GEH --> Cliente : 404 NotFoundDto
+else campaña existe
+    CA --> CS : CampaignModel (con playerClasses)
+    CS -> PA : findById(playerClassId)
+    alt clase no existe
+        CS -> GEH : throw NotFoundRunTimeException("Race not found")
+        GEH --> Cliente : 404 NotFoundDto
+    else clase existe
+        PA --> CS : PlayerClassModel
+        CS -> CS : playerClasses.add(playerClass)
+        CS -> CS : campaign.setPlayerClasses(playerClasses)
+        CS -> CA : save(campaign)
+        CA -> CM : toEntity(campaign)
+        CA -> CJ : save(entity)  ' inserta en tabla intermedia campaign_player_class
+        CJ --> CA : CampaignEntity
+        CA --> CS : CampaignModel
+        CS --> CC : ok
+        CC --> Cliente : 202 Accepted (sin body)
+    end
+end
+
+@enduml

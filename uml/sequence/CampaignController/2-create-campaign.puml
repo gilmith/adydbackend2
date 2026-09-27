@@ -1,0 +1,30 @@
+@startuml create-campaign
+title POST /campaign — createCampaign
+' Capas: Web(controller) -> Aplicación(serviceImpl) -> Puerto(repository) -> Infraestructura(Jpa/Mapper/Entity) -> Dominio(Model)
+
+actor Cliente
+participant "CampaignController" as CC
+participant "CampaignServiceImpl\n(implements CampaignService)" as CS
+participant "CampaignRepositoryAdapter\n(implements CampaignRepository)" as CA
+participant "CampaignJpaRepository" as CJ
+participant "CampaignMapper" as CM
+participant "CampaignDtoMapper" as CDM
+
+Cliente -> CC : POST /campaign (body CampaignDto)
+CC -> CDM : toModel(campaignDto)
+CDM --> CC : CampaignModel
+CC -> CS : create(campaign)
+CS -> CA : save(campaign)
+CA -> CM : toEntity(campaign)
+CM --> CA : CampaignEntity
+CA -> CJ : save(entity)
+CJ --> CA : CampaignEntity (con id)
+CA -> CM : toDomain(entity)
+CM --> CA : CampaignModel
+CA --> CS : CampaignModel
+CS --> CC : CampaignModel
+CC -> CDM : toDto(campaignModel)
+CDM --> CC : CampaignDto
+CC --> Cliente : 202 Accepted [CampaignDto]
+
+@enduml

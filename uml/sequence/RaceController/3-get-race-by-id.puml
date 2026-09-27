@@ -1,0 +1,32 @@
+@startuml get-race-by-id
+title GET /race/{raceId} — getRaceById
+' Capas: Web(controller) -> Aplicación(serviceImpl) -> Puerto(repository) -> Infraestructura(Jpa/Mapper/Entity) -> Dominio(Model)
+
+actor Cliente
+participant "RaceController" as RC
+participant "RaceServiceImpl\n(implements RaceService)" as RS
+participant "RaceRepositoryAdapter\n(implements RaceRepository)" as RA
+participant "RaceJpaRepository" as RJ
+participant "RaceMapper" as RM
+participant "RaceDtoMapper" as RDM
+participant "GlobalExceptionHandler" as GEH
+
+Cliente -> RC : GET /race/{raceId}
+RC -> RS : getRaceById(raceId)
+RS -> RA : findById(raceId)
+RA -> RJ : findById(id)
+RJ --> RA : Optional<RaceEntity>
+RA -> RM : toDomain(entity)
+RM --> RA : RaceModel
+RA --> RS : Optional<RaceModel>
+alt optional vacío
+    RS -> GEH : throw NotFoundRunTimeException("Race id not found")
+    GEH --> Cliente : 404 NotFoundDto
+else present
+    RS --> RC : RaceModel
+    RC -> RDM : toDto(raceModel)
+    RDM --> RC : RaceDto
+    RC --> Cliente : 200 OK [RaceDto]
+end
+
+@enduml

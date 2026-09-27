@@ -1,0 +1,43 @@
+@startuml update-campaign
+title PATCH /campaign/{campaignId} — updateCampaign
+' Capas: Web(controller) -> Aplicación(serviceImpl) -> Puerto(repository) -> Infraestructura(Jpa/Mapper/Entity) -> Dominio(Model)
+
+actor Cliente
+participant "CampaignController" as CC
+participant "CampaignServiceImpl\n(implements CampaignService)" as CS
+participant "CampaignRepositoryAdapter\n(implements CampaignRepository)" as CA
+participant "CampaignJpaRepository" as CJ
+participant "CampaignMapper" as CM
+participant "CampaignDtoMapper" as CDM
+participant "GlobalExceptionHandler" as GEH
+
+Cliente -> CC : PATCH /campaign/{campaignId} (body CampaignDto)
+CC -> CDM : toModel(campaignDto)
+CDM --> CC : CampaignModel
+CC -> CS : update(campaignId, campaign)
+CS -> CA : findById(campaignId)
+CA -> CJ : findById(campaignId)
+alt no existe
+    CS -> GEH : throw NotFoundRunTimeException("Campaign not found")
+    GEH --> Cliente : 404 NotFoundDto
+else existe
+    CA --> CS : Optional<CampaignModel>
+    alt cambia el nombre
+        CS -> CDM : getModifiedCampaignModel(currentCampaign, campaign)
+        CDM --> CS : CampaignModel (id/auditoría preservados, updateDate=now)
+        CS -> CA : save(modified)
+        CA -> CM : toEntity(modified)
+        CA -> CJ : save(entity)
+        CJ --> CA : CampaignEntity
+        CA -> CM : toDomain(entity)
+        CA --> CS : CampaignModel
+    else mismo nombre
+        CS -> CS : devuelve currentCampaign (sin guardar)
+    end
+    CS --> CC : CampaignModel
+    CC -> CDM : toDto(campaignModel)
+    CDM --> CC : CampaignDto
+    CC --> Cliente : 202 Accepted [CampaignDto]
+end
+
+@enduml

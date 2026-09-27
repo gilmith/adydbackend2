@@ -1,0 +1,34 @@
+@startuml get-race-by-campaign-id
+title GET /campaign/{campaignId}/race — getRaceByCampaignId (proyección agrupada)
+' Capas: Web(controller) -> Aplicación(serviceImpl) -> Puerto(repository) -> Infraestructura(JPQL/proyección/Mapper) -> Dominio(Model)
+
+actor Cliente
+participant "CampaignController" as CC
+participant "CampaignServiceImpl\n(implements CampaignService)" as CS
+participant "CampaignRepositoryAdapter\n(implements CampaignRepository)" as CA
+participant "CampaignJpaRepository" as CJ
+participant "CampaignMapper" as CM
+participant "CampaignDtoMapper" as CDM
+participant "GlobalExceptionHandler" as GEH
+
+Cliente -> CC : GET /campaign/{campaignId}/race
+CC -> CS : getRaceByCampaignId(campaignId)
+CS -> CA : findAllRacesByCampaignId(campaignId)
+CA -> CJ : findAllRacesByCampaignId(campaignId)  ' JPQL: SELECT c.name, r.name, r.id
+CJ --> CA : List<CampaignRaceProjection>
+alt lista vacía
+    CA --> CS : Optional.empty()
+    CS -> GEH : throw NotFoundRunTimeException("Campaign not found")
+    GEH --> Cliente : 404 NotFoundDto
+else hay proyecciones
+    CA -> CM : raceProjectionToDoman(projections)
+    CM -> CM : groupingBy(getCampaignName) -> Map<String, List<RaceModel>>
+    CM --> CA : CampaignRaceModel{campaignName, races}
+    CA --> CS : Optional<CampaignRaceModel>
+    CS --> CC : CampaignRaceModel
+    CC -> CDM : toCampaignRaceDto(campaignRaceModel)
+    CDM --> CC : CampaignRaceDto
+    CC --> Cliente : 200 OK [CampaignRaceDto]
+end
+
+@enduml
