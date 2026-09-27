@@ -25,7 +25,7 @@ jobs:
           VERSION=${GITHUB_REF_NAME#v}
           echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
 
-      # 2. Configurar Java 21 y credenciales de GitHub Packages para Maven
+      # 2. Configurar Java 25 y credenciales de GitHub Packages para Maven
       - name: Set up JDK 25
         uses: actions/setup-java@v4
         with:
