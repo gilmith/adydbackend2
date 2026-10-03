@@ -11,12 +11,14 @@ jobs:
   build-and-publish:
     runs-on: ubuntu-latest
     permissions:
-      contents: write   # Necesario para subir archivos a Releases
+      contents: write   # Necesario para subir a Releases y hacer push a master
       packages: write   # Necesario para subir artefactos a GitHub Packages
 
     steps:
       - name: Checkout del código
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Descarga todo el historial de ramas para permitir el merge limpio
 
       # 1. Extraer la versión limpia desde el Tag (ej: v1.0.0 -> 1.0.0)
       - name: Extract Tag Version
@@ -65,5 +67,18 @@ jobs:
             Artefacto publicado exitosamente en GitHub Packages con versión `${{ steps.get_version.outputs.VERSION }}`.
             - Cliente Java publicado en GitHub Packages
             - Cliente Angular (typescript-angular, ng 22) adjunto como `client-angular-${{ steps.get_version.outputs.VERSION }}.tar.gz`
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # 7. Merge automático del tag/commit a la rama master
+      - name: Merge to master
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git fetch origin main
+          git checkout main
+          # Hace merge del commit asociado al tag que activó la Action
+          git merge ${{ github.sha }} --no-ff -m "chore(release): merge tag ${{ github.ref_name }} into main"
+          git push origin main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
