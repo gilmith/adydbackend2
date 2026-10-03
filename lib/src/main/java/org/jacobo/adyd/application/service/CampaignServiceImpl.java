@@ -15,6 +15,7 @@ import org.jacobo.adyd.domain.repository.FileStoreRepository;
 import org.jacobo.adyd.domain.repository.PlayerClassRepository;
 import org.jacobo.adyd.domain.repository.RaceRepository;
 import org.jacobo.adyd.domain.service.CampaignService;
+import org.jacobo.adyd.domain.service.FileService;
 import org.jacobo.adyd.domain.service.FileStoreService;
 import org.jacobo.adyd.infraestructure.mapper.CampaignDtoMapper;
 import org.jacobo.adyd.service.helpers.AdydUtils;
@@ -32,11 +33,10 @@ import java.util.List;
 public class CampaignServiceImpl implements CampaignService {
 
     private final CampaignRepository campaignRepository;
-    private final FileStoreRepository fileStoreRepository;
     private final CampaignDtoMapper campaignMapper;
     private final RaceRepository raceRepository;
     private final PlayerClassRepository playerClassRepository;
-    private final FileStoreService fileStoreService;
+    private final FileService fileService;
 
     @Override
     @Transactional(readOnly = true)
@@ -63,26 +63,11 @@ public class CampaignServiceImpl implements CampaignService {
         if (campaign.getCampaignImage() != null && campaign.getCampaignImage().exists()) {
             val resource = campaign.getCampaignImage();
             val fileName = resource.getFilename() != null ? resource.getFilename() : "campaign_image";
-            val fileStore = uploadAndGenerateUrl(campaign, fileName);
-            val fileStoreSaved = fileStoreRepository.save(fileStore);
-            campaign.setFileStore(fileStoreSaved);
+            campaign.setFileStore(fileService.uploadAndGenerateUrl(fileName, campaign.getCampaignImage().getInputStream()));
         }
         return campaignRepository.save(campaignMapper.getModifiedCampaignModel(currentCampaign, campaign));
     }
 
-    private FileStoreModel uploadAndGenerateUrl(CampaignModel campaign, String fileName) throws IOException {
-        val fileStoreModel = new FileStoreModel();
-        fileStoreModel.setFileName(fileName);
-        try (InputStream inputStream = campaign.getCampaignImage().getInputStream()) {
-            String contentType = URLConnection.guessContentTypeFromName(fileName);
-            fileStoreModel.setUrl( fileStoreService.uploadFile(fileName, "campaigns", contentType,
-                    inputStream));
-        } catch (IOException e) {
-            log.error("Error uploading campaign image", e);
-            throw new AdydException("Error uploading campaign image");
-        }
-        return fileStoreModel;
-    }
 
     @Override
     @Transactional

@@ -10,6 +10,6 @@ public interface FileStoreRepository {
 
     FileStoreModel findById(Long id);
 
-    FileStoreModel findByFileName(String fileName);
+    Optional<FileStoreModel> findByFileName(String fileName);
 
 }

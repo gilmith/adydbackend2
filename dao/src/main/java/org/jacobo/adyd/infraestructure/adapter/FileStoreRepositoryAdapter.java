@@ -28,7 +28,7 @@ public class FileStoreRepositoryAdapter implements FileStoreRepository {
     }
 
     @Override
-    public FileStoreModel findByFileName(String fileName) {
-        return fileStoreMapper.toModel(fileStoreJpaRepository.findByFileName(fileName).orElseThrow(() -> new RuntimeException("File Name not found")));
+    public Optional<FileStoreModel> findByFileName(String fileName) {
+        return Optional.ofNullable(fileStoreMapper.toModel(fileStoreJpaRepository.findByFileName(fileName).orElse(null)));
     }
 }
