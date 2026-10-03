@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.jacobo.adyd.api.CampaignControllerApi;
 import org.jacobo.adyd.api.dto.CampaignDto;
 import org.jacobo.adyd.api.dto.CampaignPlayerClassDto;
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -27,7 +29,6 @@ public class CampaignController implements CampaignControllerApi {
 
     private final CampaignService campaignService;
     private final CampaignDtoMapper campaignMapper;
-    private final CampaignDtoMapper campaignDtoMapper;
 
     @Override
     public ResponseEntity<List<CampaignDto>> getAllCampaign(){
@@ -45,8 +46,17 @@ public class CampaignController implements CampaignControllerApi {
     }
 
     @Override
-    public ResponseEntity<CampaignDto> updateCampaign(Long campaignId, CampaignDto campaignDto) {
-        return ResponseEntity.accepted().body(campaignMapper.toDto(campaignService.update(campaignId, campaignMapper.toModel(campaignDto))));
+    public ResponseEntity<CampaignDto> updateCampaign(Long campaignId, String name, MultipartFile campaignImage) {
+        try {
+            val model = org.jacobo.adyd.domain.model.CampaignModel.builder()
+                    .id(campaignId)
+                    .name(name)
+                    .campaignImage(campaignImage == null ? null : campaignImage.getResource())
+                    .build();
+            return ResponseEntity.accepted().body(campaignMapper.toDto(campaignService.update(model)));
+        } catch (java.io.IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -62,7 +72,7 @@ public class CampaignController implements CampaignControllerApi {
 
     @Override
     public ResponseEntity<CampaignRaceDto> getRaceByCampaignId(Long campaignId){
-        return ResponseEntity.ok(campaignDtoMapper.toCampaignRaceDto(campaignService.getRaceByCampaignId(campaignId)));
+        return ResponseEntity.ok(campaignMapper.toCampaignRaceDto(campaignService.getRaceByCampaignId(campaignId)));
     }
 
     @Override

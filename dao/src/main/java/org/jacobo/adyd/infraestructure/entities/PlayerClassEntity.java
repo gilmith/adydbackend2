@@ -6,8 +6,8 @@ import lombok.experimental.SuperBuilder;
 
 import java.util.Set;
 
-@EqualsAndHashCode(callSuper = true, exclude = "campaigns")
-@ToString(callSuper = true, exclude = "campaigns")
+@EqualsAndHashCode(callSuper = true, exclude = {"campaigns", "playerClassCharacteristicEntities"})
+@ToString(callSuper = true, exclude = {"campaigns",  "playerClassCharacteristicEntities"})
 @Entity
 @Table(name = "player_class")
 @Data

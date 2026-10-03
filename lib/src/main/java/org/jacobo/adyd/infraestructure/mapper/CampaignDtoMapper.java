@@ -15,6 +15,7 @@ import java.util.List;
 @Mapper(componentModel = "spring", uses = {RaceDtoMapper.class, PlayerClassDtoMapper.class})
 public interface CampaignDtoMapper {
 
+    @Mapping(target = "fileStoreUrl", source = "fileStore.url")
     CampaignDto toDto(CampaignModel campaign);
 
     List<CampaignDto> toDto(List<CampaignModel> campaign);
@@ -34,4 +35,5 @@ public interface CampaignDtoMapper {
     @Mapping(target = "campaign", source = "campaign")
     @Mapping(target = "playerClass", source = "playerClass")
     CampaignPlayerClassDto toCampaignPlayerClassDto(CampaignPlayerClassModel playerClassForCampaign);
+
 }

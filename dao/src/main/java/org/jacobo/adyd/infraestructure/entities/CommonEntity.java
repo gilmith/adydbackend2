@@ -25,7 +25,7 @@ public class CommonEntity {
     private LocalDateTime createDate;
 
     @Column(name = "update_date")
-    private LocalDateTime updatedDate;
+    private LocalDateTime updateDate;
 
     @Column(name = "create_user")
     private String createUser;

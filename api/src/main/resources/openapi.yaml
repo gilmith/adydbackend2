@@ -87,9 +87,9 @@ paths:
       requestBody:
         required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
-              $ref: '#/components/schemas/CampaignDto'
+              $ref: '#/components/schemas/CampaignUpdateDto'
       responses:
         202:
           description: Accepted
@@ -523,11 +523,14 @@ components:
       type: object
       required:
         - name
+        - id
       properties:
         id:
           type: integer
           format: int64
         name:
+          type: string
+        fileStoreUrl:
           type: string
     CampaignRaceDto:
       type: object
@@ -631,11 +634,14 @@ components:
       type: array
       items:
         type: string
-    NotFoundDto:
+    CampaignUpdateDto:
       type: object
       properties:
-        message:
+        name:
           type: string
+        campaignImage:
+          type: string
+          format: binary
     PlayerClassCharacteristicDto:
       type: object
       required:
@@ -646,7 +652,12 @@ components:
           type: integer
           format: int64
         characteristics:
-            $ref: '#/components/schemas/CharacteristicDto'
+          $ref: '#/components/schemas/CharacteristicDto'
+    NotFoundDto:
+      type: object
+      properties:
+        message:
+          type: string
     BadRequest:
       type: object
       properties:

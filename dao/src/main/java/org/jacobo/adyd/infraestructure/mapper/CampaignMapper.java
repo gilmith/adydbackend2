@@ -12,15 +12,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Mapper(componentModel = "spring", uses = {RaceMapper.class})
+@Mapper(componentModel = "spring", uses = {RaceMapper.class, FileStoreMapper.class})
 public interface CampaignMapper {
 
     @Mapping(target = "races", source = "raceEntities")
+    @Mapping(target = "fileStore", source = "fileStoreEntity")
     CampaignModel toDomain(CampaignEntity campaignEntity);
 
     List<CampaignModel> toDomain(List<CampaignEntity> campaignEntities);
 
     @Mapping(target = "raceEntities", source = "races")
+    @Mapping(target = "fileStoreEntity", source = "fileStore")
+    @Mapping(target = "updateDate", expression = "java(java.time.LocalDateTime.now())")
+    @Mapping(target = "updateUser", constant = "SYSTEM")
     CampaignEntity toEntity(CampaignModel campaign);
 
 

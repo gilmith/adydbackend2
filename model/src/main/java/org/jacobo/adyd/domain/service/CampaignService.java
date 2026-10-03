@@ -4,6 +4,7 @@ import org.jacobo.adyd.domain.model.CampaignModel;
 import org.jacobo.adyd.domain.model.CampaignPlayerClassModel;
 import org.jacobo.adyd.domain.model.CampaignRaceModel;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface CampaignService {
@@ -14,7 +15,7 @@ public interface CampaignService {
 
     CampaignModel create(CampaignModel campaign);
 
-    CampaignModel update(Long id, CampaignModel campaign);
+    CampaignModel update(CampaignModel campaign) throws IOException;
 
     CampaignRaceModel findAllRacesByCampaignId(Long campaignId);
 

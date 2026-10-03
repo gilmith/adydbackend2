@@ -4,18 +4,26 @@ package org.jacobo.adyd.application.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.jacobo.adyd.domain.exception.AdydException;
 import org.jacobo.adyd.domain.exception.NotFoundRunTimeException;
 import org.jacobo.adyd.domain.model.CampaignModel;
 import org.jacobo.adyd.domain.model.CampaignPlayerClassModel;
 import org.jacobo.adyd.domain.model.CampaignRaceModel;
+import org.jacobo.adyd.domain.model.FileStoreModel;
 import org.jacobo.adyd.domain.repository.CampaignRepository;
+import org.jacobo.adyd.domain.repository.FileStoreRepository;
 import org.jacobo.adyd.domain.repository.PlayerClassRepository;
 import org.jacobo.adyd.domain.repository.RaceRepository;
 import org.jacobo.adyd.domain.service.CampaignService;
+import org.jacobo.adyd.domain.service.FileStoreService;
 import org.jacobo.adyd.infraestructure.mapper.CampaignDtoMapper;
+import org.jacobo.adyd.service.helpers.AdydUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URLConnection;
 import java.util.List;
 
 @Service
@@ -24,9 +32,11 @@ import java.util.List;
 public class CampaignServiceImpl implements CampaignService {
 
     private final CampaignRepository campaignRepository;
+    private final FileStoreRepository fileStoreRepository;
     private final CampaignDtoMapper campaignMapper;
     private final RaceRepository raceRepository;
     private final PlayerClassRepository playerClassRepository;
+    private final FileStoreService fileStoreService;
 
     @Override
     @Transactional(readOnly = true)
@@ -48,15 +58,34 @@ public class CampaignServiceImpl implements CampaignService {
 
     @Override
     @Transactional
-    public CampaignModel update(Long id, CampaignModel campaign) {
-        val currentCampaign = campaignRepository.findById(id).orElseThrow(() -> new NotFoundRunTimeException("Campaign not found"));
-        if(!campaign.getName().equals(currentCampaign.getName())) {
-            return campaignRepository.save(campaignMapper.getModifiedCampaignModel(currentCampaign, campaign));
+    public CampaignModel update(CampaignModel campaign) throws IOException {
+        val currentCampaign = campaignRepository.findById(campaign.getId()).orElseThrow(() -> new NotFoundRunTimeException("Campaign not found"));
+        if (campaign.getCampaignImage() != null && campaign.getCampaignImage().exists()) {
+            val resource = campaign.getCampaignImage();
+            val fileName = resource.getFilename() != null ? resource.getFilename() : "campaign_image";
+            val fileStore = uploadAndGenerateUrl(campaign, fileName);
+            val fileStoreSaved = fileStoreRepository.save(fileStore);
+            campaign.setFileStore(fileStoreSaved);
         }
-        return currentCampaign;
+        return campaignRepository.save(campaignMapper.getModifiedCampaignModel(currentCampaign, campaign));
+    }
+
+    private FileStoreModel uploadAndGenerateUrl(CampaignModel campaign, String fileName) throws IOException {
+        val fileStoreModel = new FileStoreModel();
+        fileStoreModel.setFileName(fileName);
+        try (InputStream inputStream = campaign.getCampaignImage().getInputStream()) {
+            String contentType = URLConnection.guessContentTypeFromName(fileName);
+            fileStoreModel.setUrl( fileStoreService.uploadFile(fileName, "campaigns", contentType,
+                    inputStream));
+        } catch (IOException e) {
+            log.error("Error uploading campaign image", e);
+            throw new AdydException("Error uploading campaign image");
+        }
+        return fileStoreModel;
     }
 
     @Override
+    @Transactional
     public CampaignRaceModel findAllRacesByCampaignId(Long campaignId) {
         return campaignRepository.findAllRacesByCampaignId(campaignId)
                 .orElseThrow(() -> new NotFoundRunTimeException("Campaign not found"));
@@ -77,6 +106,7 @@ public class CampaignServiceImpl implements CampaignService {
     }
 
     @Override
+    @Transactional
     public void addRaceInCampaign(Long campaignId, Long raceId) {
         val campaign = campaignRepository.findById(campaignId)
                 .orElseThrow(() -> new NotFoundRunTimeException("Campaign not found"));
@@ -88,6 +118,7 @@ public class CampaignServiceImpl implements CampaignService {
     }
 
     @Override
+    @Transactional
     public void addPlayerClassInCampaign(Long campaignId, Long playerClassId) {
         val campaign = campaignRepository.findById(campaignId)
                 .orElseThrow(() -> new NotFoundRunTimeException("Campaign not found"));
@@ -99,12 +130,14 @@ public class CampaignServiceImpl implements CampaignService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public CampaignPlayerClassModel getPlayerClassForCampaign(Long campaignId) {
         return campaignRepository.findPlayerClassForCampaign(campaignId)
                 .orElseThrow(() -> new NotFoundRunTimeException("Campaign not found"));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public CampaignRaceModel getRaceByCampaignId(Long campaignId) {
         return campaignRepository.findAllRacesByCampaignId(campaignId)
                 .orElseThrow(() -> new NotFoundRunTimeException("Campaign not found"));

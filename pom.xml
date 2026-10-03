@@ -27,11 +27,12 @@
 <modules>
         <module>model</module>
         <module>validation</module>
+        <module>file-store</module>
         <module>lib</module>
         <module>dao</module>
         <module>api</module>
         <module>app</module>
-    </modules>
+</modules>
 
     <properties>
         <java.version>25</java.version>
@@ -42,6 +43,7 @@
         <spring-boot.version>4.1.1</spring-boot.version>
         <postgresql.version>42.7.12</postgresql.version>
         <openapi-generator.version>7.25.0</openapi-generator.version>
+        <aws-sdk.version>2.55.7</aws-sdk.version>
     </properties>
 
     <dependencyManagement>
