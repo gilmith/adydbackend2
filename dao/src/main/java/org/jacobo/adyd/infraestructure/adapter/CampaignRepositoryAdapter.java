@@ -7,10 +7,11 @@ import org.jacobo.adyd.domain.repository.CampaignRepository;
 import org.jacobo.adyd.infraestructure.mapper.CampaignMapper;
 import org.jacobo.adyd.infraestructure.persistence.CampaignJpaRepository;
 import org.jacobo.adyd.infraestructure.projection.CampaignRaceProjection;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,8 +35,8 @@ public class CampaignRepositoryAdapter implements CampaignRepository {
     }
 
     @Override
-    public List<CampaignModel> findAll() {
-        return campaignMapper.toDomain(jpaRepository.findAll());
+    public Page<CampaignModel> findAll(PageRequest pageable) {
+        return campaignMapper.toDomain(jpaRepository.findAll(pageable));
     }
 
     @Override

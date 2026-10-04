@@ -12,15 +12,17 @@ paths:
       operationId: getAllCampaign
       tags:
         - campaign-controller
+      parameters:
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/size'
+        - $ref: '#/components/parameters/sort'
       responses:
         200:
           description: OK
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/CampaignDto'
+                $ref: '#/components/schemas/PaginatedDto'
         500:
           description: Internal Server Error
           content:
@@ -497,6 +499,30 @@ paths:
                 $ref: '#/components/schemas/CharacteristicDto'
 components:
   schemas:
+    PaginatedDto:
+      type: object
+      required:
+        - page
+        - totalPages
+        - totalElements
+        - content
+      properties:
+        page:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int64
+        totalElements:
+          type: integer
+          format: int64
+        content:
+          type: array
+          items:
+            anyOf:
+              - $ref: '#/components/schemas/CampaignDto'
+              - $ref: '#/components/schemas/RaceDto'
+              - $ref: '#/components/schemas/PlayerClassDto'
     PlayerClassDto:
       type: object
       required:
@@ -674,6 +700,32 @@ components:
         message:
           type: string
   parameters:
+    page:
+      name: page
+      in: query
+      required: false
+      schema:
+        type: integer
+        format: int32
+        default: 0
+    size:
+      name: size
+      in: query
+      required: false
+      schema:
+        type: integer
+        format: int32
+        default: 10
+    sort:
+      name: sort
+      in: query
+      required: false
+      description: >
+        Criterio de ordenación en formato: `propiedad(,asc|desc)`. 
+        Campos permitidos: `id`, `name`, `createdAt`, `status`.
+      schema:
+        type: string
+      example: ["name,asc", "createdAt,desc"]
     raceId:
       name: raceId
       in: path

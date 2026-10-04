@@ -7,6 +7,7 @@ import org.jacobo.adyd.infraestructure.projection.CampaignPlayerClassProjection;
 import org.jacobo.adyd.infraestructure.projection.CampaignRaceProjection;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.Map;
@@ -19,7 +20,9 @@ public interface CampaignMapper {
     @Mapping(target = "fileStore", source = "fileStoreEntity")
     CampaignModel toDomain(CampaignEntity campaignEntity);
 
-    List<CampaignModel> toDomain(List<CampaignEntity> campaignEntities);
+    default Page<CampaignModel> toDomain(Page<CampaignEntity> campaignEntities) {
+        return campaignEntities.map(this::toDomain);
+    }
 
     @Mapping(target = "raceEntities", source = "races")
     @Mapping(target = "fileStoreEntity", source = "fileStore")
