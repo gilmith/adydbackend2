@@ -204,6 +204,10 @@ paths:
     get:
       summary: get all races
       operationId: getAllRaces
+      parameters:
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/size'
+        - $ref: '#/components/parameters/sort'
       tags:
         - race-controller
       responses:
@@ -212,9 +216,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/RaceDto'
+                $ref: '#/components/schemas/PaginatedDto'
     post:
       summary: add new race
       operationId: createNewRace
@@ -395,15 +397,17 @@ paths:
       operationId: getAllPlayerClass
       tags:
         - player-class-controller
+      parameters:
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/size'
+        - $ref: '#/components/parameters/sort'
       responses:
         200:
           description: OK
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/PlayerClassDto'
+                $ref: '#/components/schemas/PaginatedDto'
     post:
       summary: create a new player class
       operationId: createNewPlayerClass

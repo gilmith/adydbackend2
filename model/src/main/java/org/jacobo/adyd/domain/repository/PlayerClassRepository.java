@@ -1,6 +1,8 @@
 package org.jacobo.adyd.domain.repository;
 
 import org.jacobo.adyd.domain.model.PlayerClassModel;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,7 +13,7 @@ public interface PlayerClassRepository {
 
     Optional<PlayerClassModel> findById(Long id);
 
-    List<PlayerClassModel> findAll();
+    Page<PlayerClassModel> findAll(PageRequest pagination);
 
     void deleteById(Long id);
 

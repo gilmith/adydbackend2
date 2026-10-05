@@ -1,6 +1,8 @@
 package org.jacobo.adyd.domain.repository;
 
 import org.jacobo.adyd.domain.model.RaceModel;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,7 +13,7 @@ public interface RaceRepository {
 
     Optional<RaceModel> findById(Long id);
 
-    List<RaceModel> findAll();
+    Page<RaceModel> findAll(PageRequest pagination);
 
     void deleteById(Long id);
 

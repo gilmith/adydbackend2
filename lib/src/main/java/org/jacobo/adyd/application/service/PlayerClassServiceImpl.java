@@ -6,6 +6,8 @@ import org.jacobo.adyd.domain.exception.NotFoundRunTimeException;
 import org.jacobo.adyd.domain.model.PlayerClassModel;
 import org.jacobo.adyd.domain.repository.PlayerClassRepository;
 import org.jacobo.adyd.domain.service.PlayerClassService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,8 +19,8 @@ public class PlayerClassServiceImpl implements PlayerClassService {
     private final PlayerClassRepository playerClassRepository;
 
     @Override
-    public List<PlayerClassModel> getAll() {
-        return playerClassRepository.findAll();
+    public Page<PlayerClassModel> getAll(PageRequest pagination) {
+        return playerClassRepository.findAll(pagination);
     }
 
     @Override

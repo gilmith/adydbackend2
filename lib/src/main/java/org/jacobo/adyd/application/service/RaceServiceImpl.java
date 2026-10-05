@@ -7,11 +7,11 @@ import org.jacobo.adyd.domain.model.RaceModel;
 import org.jacobo.adyd.domain.repository.RaceRepository;
 import org.jacobo.adyd.domain.service.RaceService;
 import org.jacobo.adyd.infraestructure.mapper.RaceDtoMapper;
-import org.springframework.data.crossstore.ChangeSetPersister;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @RequiredArgsConstructor
 @Service
@@ -21,8 +21,8 @@ public class RaceServiceImpl implements RaceService {
     private final RaceDtoMapper raceDtoMapper;
 
     @Override
-    public List<RaceModel> getAllRaces() {
-        return raceRepository.findAll();
+    public Page<RaceModel> getAllRaces(PageRequest pagination) {
+        return raceRepository.findAll(pagination);
     }
 
     @Override

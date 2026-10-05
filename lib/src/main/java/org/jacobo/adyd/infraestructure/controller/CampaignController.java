@@ -10,6 +10,7 @@ import org.jacobo.adyd.api.dto.CampaignRaceDto;
 import org.jacobo.adyd.api.dto.PaginatedDto;
 import org.jacobo.adyd.domain.service.CampaignService;
 import org.jacobo.adyd.infraestructure.mapper.CampaignDtoMapper;
+import org.jacobo.adyd.infraestructure.mapper.PageMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
@@ -29,8 +30,8 @@ public class CampaignController implements CampaignControllerApi {
 
     @Override
     public ResponseEntity<PaginatedDto> getAllCampaign(Integer page, Integer size, String sort){
-        val pageable = PageRequest.of(page, size, Sort.by(sort.split(",")[0]));
-        return ResponseEntity.ok(campaignMapper.toDto(campaignService.findAll(pageable)));
+        val pagination = PageMapper.of(page, size, sort);
+        return ResponseEntity.ok(campaignMapper.toDto(campaignService.findAll(pagination)));
     }
 
     @Override
