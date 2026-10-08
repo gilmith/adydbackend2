@@ -3,14 +3,15 @@ package org.jacobo.adyd.domain.service;
 import org.jacobo.adyd.domain.model.CampaignModel;
 import org.jacobo.adyd.domain.model.CampaignPlayerClassModel;
 import org.jacobo.adyd.domain.model.CampaignRaceModel;
+import org.jacobo.adyd.domain.validator.SortValidator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 import java.io.IOException;
-import java.util.List;
 
 public interface CampaignService {
 
+    @SortValidator(CampaignModel.class)
     Page<CampaignModel> findAll(PageRequest pageable);
 
     CampaignModel findById(Long id);

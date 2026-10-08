@@ -10,11 +10,13 @@ import org.jacobo.adyd.infraestructure.mapper.RaceDtoMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 
 @RequiredArgsConstructor
 @Service
+@Validated
 public class RaceServiceImpl implements RaceService {
 
     private final RaceRepository raceRepository;
