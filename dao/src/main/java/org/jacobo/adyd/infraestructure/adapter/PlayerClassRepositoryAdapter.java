@@ -5,6 +5,8 @@ import org.jacobo.adyd.domain.model.PlayerClassModel;
 import org.jacobo.adyd.domain.repository.PlayerClassRepository;
 import org.jacobo.adyd.infraestructure.mapper.PlayerClassMapper;
 import org.jacobo.adyd.infraestructure.persistence.PlayerClassJpaRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,8 +35,8 @@ public class PlayerClassRepositoryAdapter implements PlayerClassRepository {
 
     @Override
     @Transactional(readOnly = true)
-    public List<PlayerClassModel> findAll() {
-        return jpaRepository.findAll().stream().map(playerClassMapper::toDomain).toList();
+    public Page<PlayerClassModel> findAll(PageRequest pagination) {
+        return playerClassMapper.toDomain(jpaRepository.findAll(pagination));
     }
 
     @Override

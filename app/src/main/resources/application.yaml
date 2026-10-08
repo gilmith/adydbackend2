@@ -17,4 +17,8 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-
+s3:
+  key: ${AWS_ACCESS_KEY_ID:YIK1A7NA38961KL6RVX4}
+  secret: ${AWS_SECRET_ACCESS_KEY:Pmk5EkVMxyBl6EWMq1QT1NW5gLeZb7f9XoVTV0azHs}
+  url-download: ${S3_URL:http://localhost:8888}
+  url-upload: ${S3_URL:http://localhost:8333}

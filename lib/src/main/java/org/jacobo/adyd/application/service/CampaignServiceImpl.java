@@ -4,31 +4,27 @@ package org.jacobo.adyd.application.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.jacobo.adyd.domain.exception.AdydException;
 import org.jacobo.adyd.domain.exception.NotFoundRunTimeException;
 import org.jacobo.adyd.domain.model.CampaignModel;
 import org.jacobo.adyd.domain.model.CampaignPlayerClassModel;
 import org.jacobo.adyd.domain.model.CampaignRaceModel;
-import org.jacobo.adyd.domain.model.FileStoreModel;
 import org.jacobo.adyd.domain.repository.CampaignRepository;
-import org.jacobo.adyd.domain.repository.FileStoreRepository;
 import org.jacobo.adyd.domain.repository.PlayerClassRepository;
 import org.jacobo.adyd.domain.repository.RaceRepository;
 import org.jacobo.adyd.domain.service.CampaignService;
 import org.jacobo.adyd.domain.service.FileService;
-import org.jacobo.adyd.domain.service.FileStoreService;
 import org.jacobo.adyd.infraestructure.mapper.CampaignDtoMapper;
-import org.jacobo.adyd.service.helpers.AdydUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URLConnection;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Validated
 @Slf4j
 public class CampaignServiceImpl implements CampaignService {
 
@@ -40,8 +36,8 @@ public class CampaignServiceImpl implements CampaignService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<CampaignModel> findAll() {
-        return campaignRepository.findAll();
+    public Page<CampaignModel> findAll(PageRequest pageable) {
+        return campaignRepository.findAll(pageable);
     }
 
     @Override

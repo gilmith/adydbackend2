@@ -6,6 +6,8 @@ import org.jacobo.adyd.domain.model.RaceModel;
 import org.jacobo.adyd.domain.repository.RaceRepository;
 import org.jacobo.adyd.infraestructure.mapper.RaceMapper;
 import org.jacobo.adyd.infraestructure.persistence.RaceJpaRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -28,8 +30,8 @@ public class RaceRepositoryAdapter implements RaceRepository {
     }
 
     @Override
-    public List<RaceModel> findAll() {
-        return raceJpaRepository.findAll().stream().map(raceMapper::toDomain).toList();
+    public Page<RaceModel> findAll(PageRequest pagination) {
+        return raceMapper.toDomain(raceJpaRepository.findAll(pagination));
     }
 
     @Override

@@ -1,7 +1,5 @@
 package org.jacobo.adyd.infraestructure.controller;
 
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -9,16 +7,16 @@ import org.jacobo.adyd.api.CampaignControllerApi;
 import org.jacobo.adyd.api.dto.CampaignDto;
 import org.jacobo.adyd.api.dto.CampaignPlayerClassDto;
 import org.jacobo.adyd.api.dto.CampaignRaceDto;
+import org.jacobo.adyd.api.dto.PaginatedDto;
 import org.jacobo.adyd.domain.service.CampaignService;
 import org.jacobo.adyd.infraestructure.mapper.CampaignDtoMapper;
-import org.jacobo.adyd.validators.ExistingEntity;
+import org.jacobo.adyd.infraestructure.mapper.PageMapper;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 
 @RestController
@@ -31,8 +29,9 @@ public class CampaignController implements CampaignControllerApi {
     private final CampaignDtoMapper campaignMapper;
 
     @Override
-    public ResponseEntity<List<CampaignDto>> getAllCampaign(){
-        return ResponseEntity.ok(campaignMapper.toDto(campaignService.findAll()));
+    public ResponseEntity<PaginatedDto> getAllCampaign(Integer page, Integer size, String sort){
+        val pagination = PageMapper.of(page, size, sort);
+        return ResponseEntity.ok(campaignMapper.toDto(campaignService.findAll(pagination)));
     }
 
     @Override

@@ -3,12 +3,15 @@ package org.jacobo.adyd.infraestructure.mapper;
 import org.jacobo.adyd.api.dto.CampaignDto;
 import org.jacobo.adyd.api.dto.CampaignPlayerClassDto;
 import org.jacobo.adyd.api.dto.CampaignRaceDto;
+import org.jacobo.adyd.api.dto.PaginatedDto;
+import org.jacobo.adyd.api.dto.PaginatedDtoContentInner;
 import org.jacobo.adyd.domain.model.CampaignModel;
 import org.jacobo.adyd.domain.model.CampaignPlayerClassModel;
 import org.jacobo.adyd.domain.model.CampaignRaceModel;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -18,7 +21,15 @@ public interface CampaignDtoMapper {
     @Mapping(target = "fileStoreUrl", source = "fileStore.url")
     CampaignDto toDto(CampaignModel campaign);
 
-    List<CampaignDto> toDto(List<CampaignModel> campaign);
+    @Mapping(target = "page", source = "number")
+    @Mapping(target = "totalPages", source = "totalPages")
+    @Mapping(target = "totalElements", source = "totalElements")
+    @Mapping(target = "content", source = "content")
+    PaginatedDto toDto(Page<CampaignModel> campaign);
+
+    @Mapping(target = "fileStoreUrl", source = "fileStore.url")
+    @Mapping(target = "hitDice", ignore = true)
+    PaginatedDtoContentInner toContentInner(CampaignModel campaign);
 
     CampaignModel toModel(CampaignDto campaign);
 
