@@ -76,15 +76,10 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          
-          # Sincronizar ramas
+          git checkout .
           git fetch origin main:main
           git checkout main
-          
-          # Realizar el merge del commit del tag (github.sha)
           git merge ${{ github.sha }} --no-ff -m "chore(release): merge tag ${{ github.ref_name }} into main"
-          
-          # Push autenticado
           git push origin main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
