@@ -1,14 +1,11 @@
 package org.jacobo.adyd.infraestructure.persistence;
 
-import org.jacobo.adyd.domain.model.CampaignModel;
 import org.jacobo.adyd.infraestructure.entities.CampaignEntity;
 import org.jacobo.adyd.infraestructure.entities.RaceEntity;
 import org.jacobo.adyd.infraestructure.projection.CampaignPlayerClassProjection;
 import org.jacobo.adyd.infraestructure.projection.CampaignRaceProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Set;

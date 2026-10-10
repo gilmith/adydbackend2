@@ -4,7 +4,6 @@ import org.jacobo.adyd.api.dto.CampaignDto;
 import org.jacobo.adyd.api.dto.CampaignPlayerClassDto;
 import org.jacobo.adyd.api.dto.CampaignRaceDto;
 import org.jacobo.adyd.api.dto.PaginatedDto;
-import org.jacobo.adyd.api.dto.PaginatedDtoContentInner;
 import org.jacobo.adyd.domain.model.CampaignModel;
 import org.jacobo.adyd.domain.model.CampaignPlayerClassModel;
 import org.jacobo.adyd.domain.model.CampaignRaceModel;
@@ -26,10 +25,6 @@ public interface CampaignDtoMapper {
     @Mapping(target = "totalElements", source = "totalElements")
     @Mapping(target = "content", source = "content")
     PaginatedDto toDto(Page<CampaignModel> campaign);
-
-    @Mapping(target = "fileStoreUrl", source = "fileStore.url")
-    @Mapping(target = "hitDice", ignore = true)
-    PaginatedDtoContentInner toContentInner(CampaignModel campaign);
 
     CampaignModel toModel(CampaignDto campaign);
 

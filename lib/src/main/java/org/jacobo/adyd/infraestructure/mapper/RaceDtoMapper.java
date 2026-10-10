@@ -1,27 +1,17 @@
 package org.jacobo.adyd.infraestructure.mapper;
 
 import org.jacobo.adyd.api.dto.PaginatedDto;
-import org.jacobo.adyd.api.dto.PaginatedDtoContentInner;
-import org.jacobo.adyd.api.dto.PlayerClassDto;
 import org.jacobo.adyd.api.dto.RaceDto;
-import org.jacobo.adyd.domain.model.CampaignModel;
-import org.jacobo.adyd.domain.model.PlayerClassModel;
 import org.jacobo.adyd.domain.model.RaceModel;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.springframework.data.domain.Page;
 
-import java.util.List;
-
 @Mapper(componentModel = "spring")
 public interface RaceDtoMapper {
 
     RaceDto toDto(RaceModel race);
-
-    @Mapping(target = "fileStoreUrl", ignore = true)
-    @Mapping(target = "hitDice", ignore = true)
-    PaginatedDtoContentInner toContentInner(RaceModel campaign);
 
     RaceModel toModel(RaceDto raceDto);
 
