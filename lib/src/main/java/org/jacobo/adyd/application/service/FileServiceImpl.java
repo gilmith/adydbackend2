@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLConnection;
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -60,8 +59,6 @@ public class FileServiceImpl implements FileService {
             String contentType = URLConnection.guessContentTypeFromName(fileName);
             fileStoreModel.setUrl(fileStoreService.uploadFile(fileName, "campaigns", contentType,
                     inputStream));
-            fileStoreModel.setUpdateDate(LocalDateTime.now());
-            fileStoreModel.setUpdateUser("SYSTEM");
             return fileStoreRepository.save(fileStoreModel);
         } catch (IOException e) {
             log.error("Error uploading campaign image", e);
