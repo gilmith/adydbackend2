@@ -501,6 +501,30 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CharacteristicDto'
+  /alignment:
+    get:
+      operationId: getAllAlignment
+      tags:
+        - alignment-controller
+      parameters:
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/size'
+        - $ref: '#/components/parameters/sort'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedDto'
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        404:
+          description: Not Found
 components:
   schemas:
     PaginatedDto:
@@ -523,10 +547,11 @@ components:
         content:
           type: array
           items:
-            anyOf:
+            oneOf:
               - $ref: '#/components/schemas/CampaignDto'
               - $ref: '#/components/schemas/RaceDto'
               - $ref: '#/components/schemas/PlayerClassDto'
+              - $ref: '#/components/schemas/AlignmentDto'
     PlayerClassDto:
       type: object
       required:
@@ -702,6 +727,16 @@ components:
       type: object
       properties:
         message:
+          type: string
+    AlignmentDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        description:
           type: string
   parameters:
     page:
