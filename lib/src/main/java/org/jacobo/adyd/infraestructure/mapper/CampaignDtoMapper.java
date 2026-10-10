@@ -28,7 +28,6 @@ public interface CampaignDtoMapper {
 
     CampaignModel toModel(CampaignDto campaign);
 
-    @Mapping(target = "updateDate", expression = "java(java.time.LocalDateTime.now())")
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createDate", ignore = true)
     @Mapping(target = "createUser", ignore = true)

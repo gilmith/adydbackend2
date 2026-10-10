@@ -26,8 +26,6 @@ public interface CampaignMapper {
 
     @Mapping(target = "raceEntities", source = "races")
     @Mapping(target = "fileStoreEntity", source = "fileStore")
-    @Mapping(target = "updateDate", expression = "java(java.time.LocalDateTime.now())")
-    @Mapping(target = "updateUser", constant = "SYSTEM")
     CampaignEntity toEntity(CampaignModel campaign);
 
 
