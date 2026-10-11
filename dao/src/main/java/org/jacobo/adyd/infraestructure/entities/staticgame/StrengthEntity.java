@@ -4,10 +4,7 @@ package org.jacobo.adyd.infraestructure.entities.staticgame;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 @Entity
@@ -16,7 +13,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@SuperBuilder
+@Builder
 public class StrengthEntity extends  StaticTableBasePointEntity {
 
     @Column(name = "hit_adjustment", insertable = false, updatable = false)

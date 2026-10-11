@@ -3,15 +3,11 @@ package org.jacobo.adyd.infraestructure.entities.staticgame;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
+import lombok.*;
 
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-@SuperBuilder
+@Builder
 @Table(name = "abilities_constitution")
 @Data
 @NoArgsConstructor
