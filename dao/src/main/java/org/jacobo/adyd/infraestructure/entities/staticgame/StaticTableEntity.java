@@ -15,7 +15,5 @@ import lombok.experimental.SuperBuilder;
 public class StaticTableEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @SequenceGenerator(allocationSize = 1)
     private Long id;
 }

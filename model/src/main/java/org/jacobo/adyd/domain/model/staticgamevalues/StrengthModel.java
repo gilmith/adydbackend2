@@ -9,9 +9,8 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @Data
 @SuperBuilder
-public class StrengthModel extends BaseGameValue{
+public class StrengthModel extends BaseStaticPointModel {
 
-    private String basePoint;
     private Integer hitAdjustment;
     private Integer damageAdjustment;
     private Double weightAllow;

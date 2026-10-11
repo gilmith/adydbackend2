@@ -19,9 +19,9 @@ import lombok.experimental.SuperBuilder;
 @Table(name = "alignment")
 public class AlignmentEntity extends StaticTableEntity {
 
-    @Column(name = "name")
+    @Column(name = "name", insertable = false, updatable = false)
     private String name;
 
-    @Column(name = "description")
+    @Column(name = "description", insertable = false, updatable = false)
     private String description;
 }
