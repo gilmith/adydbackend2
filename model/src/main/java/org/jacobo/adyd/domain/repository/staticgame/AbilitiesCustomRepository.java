@@ -6,7 +6,7 @@ import org.jacobo.adyd.domain.service.staticgame.StaticAbilitiesEnum;
 
 public interface AbilitiesCustomRepository {
 
-    <T extends BaseStaticPointModel> T findByBasePoint(String basePoint, StaticAbilitiesEnum abilitiesEnum);
+    <T extends BaseStaticPointModel> T findByBasePoint(Long id, StaticAbilitiesEnum abilitiesEnum);
 
 
 

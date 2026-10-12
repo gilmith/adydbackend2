@@ -21,11 +21,11 @@ public class AbilitiesCustomRepositoryImpl implements AbilitiesCustomRepository 
 
 
     @Override
-    public <T extends BaseStaticPointModel> T findByBasePoint(String basePoint, StaticAbilitiesEnum abilitiesEnum) {
+    public <T extends BaseStaticPointModel> T findByBasePoint(Long id, StaticAbilitiesEnum abilitiesEnum) {
         val enumEntity = staticAbilityMapper.toStaticAbilitiesEntityEnum(abilitiesEnum);
         val query = enumEntity.getQuery();
         val map = new MapSqlParameterSource();
-        map.addValue("basePoint", basePoint);
+        map.addValue("id", id);
         val rowMapper = BeanPropertyRowMapper.newInstance(enumEntity.getClazz());
         val value = this.namedParameterJdbcTemplate.queryForObject(query, map, rowMapper);
         return staticAbilityMapper.toDomain((StaticTableBasePointEntity) value);

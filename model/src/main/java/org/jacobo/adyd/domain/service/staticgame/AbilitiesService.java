@@ -4,6 +4,6 @@ import org.jacobo.adyd.domain.model.staticgamevalues.BaseStaticPointModel;
 
 public interface AbilitiesService {
 
-    <T extends BaseStaticPointModel> T getAbilityByBasePointId(String basePointId, StaticAbilitiesEnum abilitiesEnum);
+    <T extends BaseStaticPointModel> T getAbilityById(Long id, StaticAbilitiesEnum abilitiesEnum);
 
 }

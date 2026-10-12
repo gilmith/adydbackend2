@@ -14,7 +14,7 @@ public class AbilitiesServiceImpl implements AbilitiesService {
     private final AbilitiesCustomRepository abilityRepository;
 
     @Override
-    public <T extends BaseStaticPointModel> T getAbilityByBasePointId(String basePointId, StaticAbilitiesEnum abilitiesEnum) {
-        return  abilityRepository.findByBasePoint(basePointId, abilitiesEnum);
+    public <T extends BaseStaticPointModel> T getAbilityById(Long id, StaticAbilitiesEnum abilitiesEnum) {
+        return  abilityRepository.findByBasePoint(id, abilitiesEnum);
     }
 }
