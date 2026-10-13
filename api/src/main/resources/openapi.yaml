@@ -3,8 +3,11 @@ info:
   title: adyd_openapi
   description: open api adyd
   version: 1.0.0
+
 servers:
   - url: 'api'
+security:
+  - bearerAuth: []
 paths:
   /campaign:
     get:
@@ -526,6 +529,12 @@ paths:
         404:
           description: Not Found
 components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Introduce el token JWT emitido por Keycloak precedido por 'Bearer '
   schemas:
     PaginatedDto:
       type: object

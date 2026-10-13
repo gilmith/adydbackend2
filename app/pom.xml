@@ -29,7 +29,7 @@
         </dependency>
         <dependency>
             <groupId>org.jacobo.adyd</groupId>
-            <artifactId>dao</artifactId>
+            <artifactId>authentication</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

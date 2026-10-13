@@ -31,7 +31,9 @@
         <module>lib</module>
         <module>dao</module>
         <module>api</module>
+        <module>authentication</module>
         <module>app</module>
+    <module>authentication</module>
 </modules>
 
     <properties>

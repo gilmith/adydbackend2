@@ -43,6 +43,11 @@
             <artifactId>model</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.jacobo.adyd</groupId>
+            <artifactId>authentication</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>com.h2database</groupId>

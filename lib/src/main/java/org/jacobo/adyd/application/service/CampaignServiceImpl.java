@@ -16,6 +16,7 @@ import org.jacobo.adyd.domain.service.FileService;
 import org.jacobo.adyd.infraestructure.mapper.CampaignDtoMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -36,6 +37,7 @@ public class CampaignServiceImpl implements CampaignService {
 
     @Override
     @Transactional(readOnly = true)
+    @PreAuthorize("hasAnyRole('admin', 'master')")
     public Page<CampaignModel> findAll(PageRequest pageable) {
         return campaignRepository.findAll(pageable);
     }
