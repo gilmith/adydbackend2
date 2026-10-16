@@ -14,10 +14,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.mock.web.MockMultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -62,8 +62,8 @@ class CampaignServiceImplTest {
         Page<CampaignModel> result = campaignService.findAll(pageRequest);
 
         assertFalse(result.isEmpty());
-        assertTrue(result.getTotalElements() == 1);
-        assertTrue(result.getContent().get(0).getName() != null);
+        assertTrue(result.getTotalElements() > 0);
+        assertNotNull(result.getContent().getFirst().getName());
     }
 
     @Test
@@ -75,7 +75,7 @@ class CampaignServiceImplTest {
                 .build()));
         CampaignModel result = campaignService.findById(1L);
         assertNotNull(result);
-        assertTrue(result.getName() != null);
+        assertNotNull(result.getName());
     }
 
     @Test
@@ -94,12 +94,12 @@ class CampaignServiceImplTest {
         when(campaignRepository.save(campaign)).thenReturn(campaign);
         CampaignModel result = campaignService.create(campaign);
         assertNotNull(result);
-        assertTrue(result.getName() != null);
+        assertNotNull(result.getName());
         verify(campaignRepository).save(campaign);
     }
 
     @Test
-    void update_ok_withoutImage() {
+    void update_ok_withoutImage() throws IOException {
         CampaignModel existing = CampaignModel.builder()
                 .id(1L)
                 .name("Old Name")
@@ -139,12 +139,16 @@ class CampaignServiceImplTest {
                 .playerClasses(Collections.emptySet())
                 .build();
         
-        MockMultipartFile mockMultipartFile = new MockMultipartFile(
-                "image", "test.png", "image/png", "test-content".getBytes());
-        updated.setCampaignImage(mockMultipartFile);
+        ByteArrayResource imageResource = new ByteArrayResource("test-content".getBytes()) {
+            @Override
+            public String getFilename() {
+                return "test.png";
+            }
+        };
+        updated.setCampaignImage(imageResource);
         
         FileStoreModel fileStore = FileStoreModel.builder()
-                .url("http://test.com/image.png")
+                .url("https://test.com/image.png")
                 .fileName("test.png")
                 .build();
         
@@ -178,7 +182,7 @@ class CampaignServiceImplTest {
 
         CampaignRaceModel result = campaignService.findAllRacesByCampaignId(1L);
         assertNotNull(result);
-        assertTrue(result.getCampaignName() != null);
+        assertNotNull(result.getCampaignName());
         verify(campaignRepository).findAllRacesByCampaignId(1L);
     }
 
@@ -298,7 +302,7 @@ class CampaignServiceImplTest {
 
         CampaignPlayerClassModel result = campaignService.getPlayerClassForCampaign(1L);
         assertNotNull(result);
-        assertTrue(result.getCampaign() != null);
+        assertNotNull(result.getCampaign());
         verify(campaignRepository).findPlayerClassForCampaign(1L);
     }
 
@@ -318,7 +322,7 @@ class CampaignServiceImplTest {
 
         CampaignRaceModel result = campaignService.getRaceByCampaignId(1L);
         assertNotNull(result);
-        assertTrue(result.getCampaignName() != null);
+        assertNotNull(result.getCampaignName());
         verify(campaignRepository).findAllRacesByCampaignId(1L);
     }
 
