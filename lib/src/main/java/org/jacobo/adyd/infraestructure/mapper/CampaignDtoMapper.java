@@ -1,9 +1,6 @@
 package org.jacobo.adyd.infraestructure.mapper;
 
-import org.jacobo.adyd.api.dto.CampaignDto;
-import org.jacobo.adyd.api.dto.CampaignPlayerClassDto;
-import org.jacobo.adyd.api.dto.CampaignRaceDto;
-import org.jacobo.adyd.api.dto.PaginatedDto;
+import org.jacobo.adyd.api.dto.*;
 import org.jacobo.adyd.domain.model.CampaignModel;
 import org.jacobo.adyd.domain.model.CampaignPlayerClassModel;
 import org.jacobo.adyd.domain.model.CampaignRaceModel;
@@ -26,11 +23,22 @@ public interface CampaignDtoMapper {
     @Mapping(target = "content", source = "content")
     PaginatedDto toDto(Page<CampaignModel> campaign);
 
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "fileStore", ignore = true)
+    CampaignModel fromCreateModel(CreateCampaignDto campaignDto);
+
     CampaignModel toModel(CampaignDto campaign);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createDate", ignore = true)
     @Mapping(target = "createUser", ignore = true)
+    @Mapping(target = "updateDate", ignore = true)
+    @Mapping(target = "updateUser", ignore = true)
+    @Mapping(target = "races", ignore = true)
+    @Mapping(target = "playerClasses", ignore = true)
+    @Mapping(target = "fileStore", ignore = true)
+    @Mapping(target = "name", conditionExpression = "java(source.getName() == null)", ignore = true)
+    @Mapping(target = "campaignImage", conditionExpression = "java(source.getCampaignImage() == null)", ignore = true)
     CampaignModel getModifiedCampaignModel(@MappingTarget CampaignModel target, CampaignModel source);
 
     @Mapping(target = "campaign", source = "campaignName")

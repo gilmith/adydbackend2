@@ -4,10 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.jacobo.adyd.api.CampaignControllerApi;
-import org.jacobo.adyd.api.dto.CampaignDto;
-import org.jacobo.adyd.api.dto.CampaignPlayerClassDto;
-import org.jacobo.adyd.api.dto.CampaignRaceDto;
-import org.jacobo.adyd.api.dto.PaginatedDto;
+import org.jacobo.adyd.api.dto.*;
 import org.jacobo.adyd.domain.service.CampaignService;
 import org.jacobo.adyd.infraestructure.mapper.CampaignDtoMapper;
 import org.jacobo.adyd.infraestructure.mapper.PageMapper;
@@ -40,8 +37,8 @@ public class CampaignController implements CampaignControllerApi {
     }
 
     @Override
-    public ResponseEntity<CampaignDto> createCampaign(CampaignDto campaignDto) {
-        return ResponseEntity.accepted().body(campaignMapper.toDto(campaignService.create(campaignMapper.toModel(campaignDto))));
+    public ResponseEntity<CampaignDto> createCampaign(CreateCampaignDto campaignDto) {
+        return ResponseEntity.accepted().body(campaignMapper.toDto(campaignService.create(campaignMapper.fromCreateModel(campaignDto))));
     }
 
     @Override

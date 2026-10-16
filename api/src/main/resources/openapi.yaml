@@ -3,8 +3,11 @@ info:
   title: adyd_openapi
   description: open api adyd
   version: 1.0.0
+
 servers:
   - url: 'api'
+security:
+  - bearerAuth: []
 paths:
   /campaign:
     get:
@@ -39,7 +42,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CampaignDto'
+              $ref: '#/components/schemas/CreateCampaignDto'
       responses:
         201:
           description: Created
@@ -558,6 +561,12 @@ paths:
                 $ref: '#/components/schemas/AbilityDto'
 
 components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Introduce el token JWT emitido por Keycloak precedido por 'Bearer '
   schemas:
     PaginatedDto:
       type: object
@@ -605,6 +614,15 @@ components:
           type: integer
           format: int64
         name:
+          type: string
+    CreateCampaignDto:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+        fileStoreUrl:
           type: string
     CampaignDto:
       type: object

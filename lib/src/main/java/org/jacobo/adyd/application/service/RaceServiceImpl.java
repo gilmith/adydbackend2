@@ -9,6 +9,7 @@ import org.jacobo.adyd.domain.service.RaceService;
 import org.jacobo.adyd.infraestructure.mapper.RaceDtoMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -23,26 +24,31 @@ public class RaceServiceImpl implements RaceService {
     private final RaceDtoMapper raceDtoMapper;
 
     @Override
+    @PreAuthorize("hasAnyRole('admin', 'master', 'player')")
     public Page<RaceModel> getAllRaces(PageRequest pagination) {
         return raceRepository.findAll(pagination);
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('admin')")
     public RaceModel createNewRace(RaceModel raceModel) {
         return raceRepository.save(raceModel);
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('admin')")
     public void deleteRace(Long id) {
         raceRepository.deleteById(id);
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('admin', 'master', 'player')")
     public RaceModel getRaceById(Long raceId) {
         return raceRepository.findById(raceId).orElseThrow(() -> new NotFoundRunTimeException("Race id not found"));
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('admin')")
     public RaceModel updateRace(Long raceId, RaceModel raceModel) {
         val currentRace = raceRepository.findById(raceId).orElseThrow(() -> new NotFoundRunTimeException("Race id not found"));
         return raceRepository.save(raceDtoMapper.getModifiedRace(currentRace, raceModel));

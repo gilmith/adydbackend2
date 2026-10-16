@@ -10,6 +10,7 @@ import org.jacobo.adyd.domain.service.RaceCharacteristicService;
 import org.jacobo.adyd.infraestructure.mapper.CharacteristicMapper;
 import org.jacobo.adyd.application.service.helpers.PlayerClassCharacteristicHelper;
 import org.jacobo.adyd.application.service.helpers.RaceCharacteristicHelper;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,26 +31,31 @@ public class CharacteristicServiceImpl implements CharacteristicService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasAnyRole('admin', 'master')")
     public CharacteristicModel createNewProperty(Long raceId, CharacteristicModel characteristicModel, String value) {
         return raceCharacteristicHelper.createNewProperty(raceId, characteristicModel, value);
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('admin', 'master')")
     public CharacteristicModel createNewPropertyPlayer(Long playerClassId, CharacteristicModel characteristicModel, String value) {
         return playerClassCharacteristicHelper.createNewProperty(playerClassId, characteristicModel, value);
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('admin', 'master', 'player')")
     public Optional<CharacteristicModel> findByCode(String code) {
         return characteristicRepository.findByCode(code);
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('admin', 'master', 'player')")
     public List<String> getBuiltInCharacteristics() {
         return Arrays.stream(BuiltInCharacteristicsEnum.values()).map(it -> it.getCharacteristicMeta().getCode()).toList();
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('admin')")
     public CharacteristicModel updateCharacteristic(Long raceId, Long characteristicId, CharacteristicModel model) {
         return characteristicRepository.findById(characteristicId)
                 .map(it -> {
