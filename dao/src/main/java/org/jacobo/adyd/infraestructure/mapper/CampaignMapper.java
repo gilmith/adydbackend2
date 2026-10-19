@@ -18,6 +18,7 @@ public interface CampaignMapper {
 
     @Mapping(target = "races", source = "raceEntities")
     @Mapping(target = "fileStore", source = "fileStoreEntity")
+    @Mapping(target = "campaignDescription", source = "description")
     CampaignModel toDomain(CampaignEntity campaignEntity);
 
     default Page<CampaignModel> toDomain(Page<CampaignEntity> campaignEntities) {
@@ -26,6 +27,7 @@ public interface CampaignMapper {
 
     @Mapping(target = "raceEntities", source = "races")
     @Mapping(target = "fileStoreEntity", source = "fileStore")
+    @Mapping(target = "description", source = "campaignDescription")
     CampaignEntity toEntity(CampaignModel campaign);
 
 

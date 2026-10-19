@@ -637,6 +637,8 @@ components:
           type: string
         fileStoreUrl:
           type: string
+        description:
+          type: string
     CampaignRaceDto:
       type: object
       required:

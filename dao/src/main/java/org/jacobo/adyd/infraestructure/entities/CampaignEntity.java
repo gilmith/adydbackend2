@@ -37,4 +37,7 @@ public class CampaignEntity extends CommonEntity {
     @JoinColumn(name = "file_store_id")
     private FileStoreEntity fileStoreEntity;
 
+    @Column(name = "description")
+    private String description;
+
 }
