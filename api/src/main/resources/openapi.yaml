@@ -104,7 +104,7 @@ paths:
                 $ref: '#/components/schemas/CampaignDto'
     delete:
       summary: "delete camping only if its possible"
-      operationId: deleteCampingId
+      operationId: deleteCampaignId
       tags:
         - campaign-controller
       parameters:

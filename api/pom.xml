@@ -138,6 +138,48 @@
                             <workingDir>${project.basedir}</workingDir>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>package-angular-client-tar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>bash</executable>
+                            <arguments>
+                                <argument>-c</argument>
+                                <argument>cd ${project.basedir}/target/generated-clients &amp;&amp; rm -f ../adydspa-api-client-*.tar.gz ../adydspa-api-client-*.tgz &amp;&amp; tar -czf ../adydspa-api-client-${project.version}.tar.gz angular</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>npm-pack-angular-client</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>bash</executable>
+                            <arguments>
+                                <argument>-c</argument>
+                                <argument>cd ${project.basedir}/target/generated-clients/angular &amp;&amp; rm -f ../*.tgz ./*.tgz 2&gt;/dev/null; npm pack --pack-destination .. 2&gt;/dev/null || true</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>yalc-publish-angular-client</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>bash</executable>
+                            <arguments>
+                                <argument>-c</argument>
+                                <argument>cd ${project.basedir}/target/generated-clients/angular &amp;&amp; (command -v yalc &gt;/dev/null 2&gt;&amp;1 &amp;&amp; yalc publish --push || npx --yes yalc publish --push || true)</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>

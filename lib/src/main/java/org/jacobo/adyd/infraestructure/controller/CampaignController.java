@@ -80,7 +80,7 @@ public class CampaignController implements CampaignControllerApi {
         return ResponseEntity.accepted().build();
     }
     @Override
-    public ResponseEntity<Void> deleteCampingId(Long campaignId){
+    public ResponseEntity<Void> deleteCampaignId(Long campaignId){
         campaignService.deleteCampaign(campaignId);
         return ResponseEntity.accepted().build();
     }
