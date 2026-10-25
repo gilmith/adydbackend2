@@ -103,6 +103,43 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.1</version>
+                <executions>
+                    <execution>
+                        <id>copy-ts-resources</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>cp</executable>
+                            <arguments>
+                                <argument>${project.basedir}/src/main/resources/generated-client/package.json</argument>
+                                <argument>${project.basedir}/target/generated-clients/angular/package.json</argument>
+                            </arguments>
+                            <workingDir>${project.basedir}</workingDir>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-tsconfig</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>cp</executable>
+                            <arguments>
+                                <argument>${project.basedir}/src/main/resources/generated-client/tsconfig.json</argument>
+                                <argument>${project.basedir}/target/generated-clients/angular/tsconfig.json</argument>
+                            </arguments>
+                            <workingDir>${project.basedir}</workingDir>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
