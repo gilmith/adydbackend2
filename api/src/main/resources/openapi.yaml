@@ -102,6 +102,21 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CampaignDto'
+    delete:
+      summary: "delete camping only if its possible"
+      operationId: deleteCampingId
+      tags:
+        - campaign-controller
+      parameters:
+        - name: campaignId
+          schema:
+            type: integer
+            format: int64
+          in: path
+          required: true
+      responses:
+        '202':
+          description: 'accepted'
   /campaign/{campaignId}/race:
     get:
       summary: get all available races for campaign
