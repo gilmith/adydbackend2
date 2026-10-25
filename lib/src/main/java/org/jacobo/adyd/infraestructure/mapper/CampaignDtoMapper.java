@@ -15,6 +15,7 @@ import java.util.List;
 public interface CampaignDtoMapper {
 
     @Mapping(target = "fileStoreUrl", source = "fileStore.url")
+    @Mapping(target = "description", source = "campaignDescription")
     CampaignDto toDto(CampaignModel campaign);
 
     @Mapping(target = "page", source = "number")
@@ -23,10 +24,12 @@ public interface CampaignDtoMapper {
     @Mapping(target = "content", source = "content")
     PaginatedDto toDto(Page<CampaignModel> campaign);
 
+
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "fileStore", ignore = true)
     CampaignModel fromCreateModel(CreateCampaignDto campaignDto);
 
+    @Mapping(target = "campaignDescription", source = "description")
     CampaignModel toModel(CampaignDto campaign);
 
     @Mapping(target = "id", ignore = true)

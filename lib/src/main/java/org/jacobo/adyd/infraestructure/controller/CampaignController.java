@@ -1,5 +1,7 @@
 package org.jacobo.adyd.infraestructure.controller;
 
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -12,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -74,6 +77,11 @@ public class CampaignController implements CampaignControllerApi {
     @Override
     public ResponseEntity<Void> addRaceInCampaign(Long campaignId, Long raceId){
         campaignService.addRaceInCampaign(campaignId, raceId);
+        return ResponseEntity.accepted().build();
+    }
+    @Override
+    public ResponseEntity<Void> deleteCampaignId(Long campaignId){
+        campaignService.deleteCampaign(campaignId);
         return ResponseEntity.accepted().build();
     }
 

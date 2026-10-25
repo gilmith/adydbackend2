@@ -18,4 +18,5 @@ public class CampaignModel extends BaseModel{
     private Set<PlayerClassModel> playerClasses;
     private FileStoreModel fileStore;
     private Resource campaignImage;
+    private String campaignDescription;
 }
