@@ -1,20 +1,16 @@
 package org.jacobo.adyd.infraestructure.controller;
 
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.jacobo.adyd.api.CampaignControllerApi;
 import org.jacobo.adyd.api.dto.*;
+import org.jacobo.adyd.domain.model.CampaignModel;
 import org.jacobo.adyd.domain.service.CampaignService;
 import org.jacobo.adyd.infraestructure.mapper.CampaignDtoMapper;
 import org.jacobo.adyd.infraestructure.mapper.PageMapper;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -45,11 +41,12 @@ public class CampaignController implements CampaignControllerApi {
     }
 
     @Override
-    public ResponseEntity<CampaignDto> updateCampaign(Long campaignId, String name, MultipartFile campaignImage) {
+    public ResponseEntity<CampaignDto> updateCampaign(Long campaignId, String name, String description, MultipartFile campaignImage) {
         try {
-            val model = org.jacobo.adyd.domain.model.CampaignModel.builder()
+            val model = CampaignModel.builder()
                     .id(campaignId)
                     .name(name)
+                    .campaignDescription(description)
                     .campaignImage(campaignImage == null ? null : campaignImage.getResource())
                     .build();
             return ResponseEntity.accepted().body(campaignMapper.toDto(campaignService.update(model)));

@@ -4,8 +4,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.jacobo.adyd.domain.model.*;
 import org.jacobo.adyd.domain.repository.CampaignRepository;
+import org.jacobo.adyd.infraestructure.entities.CampaignEntity;
+import org.jacobo.adyd.infraestructure.entities.FileStoreEntity;
 import org.jacobo.adyd.infraestructure.mapper.CampaignMapper;
 import org.jacobo.adyd.infraestructure.persistence.CampaignJpaRepository;
+import org.jacobo.adyd.infraestructure.persistence.FileStoreJpaRepository;
 import org.jacobo.adyd.infraestructure.projection.CampaignRaceProjection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,11 +24,17 @@ public class CampaignRepositoryAdapter implements CampaignRepository {
 
     private final CampaignJpaRepository jpaRepository;
     private final CampaignMapper campaignMapper;
+    private final FileStoreJpaRepository fileStoreJpaRepository;
 
     @Override
     @Transactional
     public CampaignModel save(CampaignModel campaign) {
-        return campaignMapper.toDomain(jpaRepository.save(campaignMapper.toEntity(campaign)));
+        val entity = campaignMapper.toEntity(campaign);
+        if (campaign.getFileStore() != null && campaign.getFileStore().getId() != null) {
+            Optional<FileStoreEntity> existingFileStore = fileStoreJpaRepository.findById(campaign.getFileStore().getId());
+            existingFileStore.ifPresent(entity::setFileStoreEntity);
+        }
+        return campaignMapper.toDomain(jpaRepository.save(entity));
     }
 
 

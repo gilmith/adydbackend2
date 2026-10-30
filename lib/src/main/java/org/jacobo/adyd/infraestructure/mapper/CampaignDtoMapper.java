@@ -7,6 +7,7 @@ import org.jacobo.adyd.domain.model.CampaignRaceModel;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -39,9 +40,8 @@ public interface CampaignDtoMapper {
     @Mapping(target = "updateUser", ignore = true)
     @Mapping(target = "races", ignore = true)
     @Mapping(target = "playerClasses", ignore = true)
-    @Mapping(target = "fileStore", ignore = true)
     @Mapping(target = "name", conditionExpression = "java(source.getName() == null)", ignore = true)
-    @Mapping(target = "campaignImage", conditionExpression = "java(source.getCampaignImage() == null)", ignore = true)
+    @NullValuePropertyMappingStrategy(NullValuePropertyMappingStrategy.IGNORE)
     CampaignModel getModifiedCampaignModel(@MappingTarget CampaignModel target, CampaignModel source);
 
     @Mapping(target = "campaign", source = "campaignName")

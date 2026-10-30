@@ -16,5 +16,6 @@ public class FileStoreModel extends BaseModel{
 
     private String url;
     private String fileName;
+    private Long campaignId;
 
 }
