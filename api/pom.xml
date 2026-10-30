@@ -120,7 +120,6 @@
                                 <argument>${project.basedir}/src/main/resources/generated-client/package.json</argument>
                                 <argument>${project.basedir}/target/generated-clients/angular/package.json</argument>
                             </arguments>
-                            <workingDir>${project.basedir}</workingDir>
                         </configuration>
                     </execution>
                     <execution>
@@ -135,7 +134,6 @@
                                 <argument>${project.basedir}/src/main/resources/generated-client/tsconfig.json</argument>
                                 <argument>${project.basedir}/target/generated-clients/angular/tsconfig.json</argument>
                             </arguments>
-                            <workingDir>${project.basedir}</workingDir>
                         </configuration>
                     </execution>
                     <execution>
@@ -162,7 +160,7 @@
                             <executable>bash</executable>
                             <arguments>
                                 <argument>-c</argument>
-                                <argument>cd ${project.basedir}/target/generated-clients/angular &amp;&amp; rm -f ../*.tgz ./*.tgz 2&gt;/dev/null; npm pack --pack-destination .. 2&gt;/dev/null || true</argument>
+                                <argument>export NVM_DIR="$HOME/.nvm" &amp;&amp; [ -s "$NVM_DIR/nvm.sh" ] &amp;&amp; . "$NVM_DIR/nvm.sh" &amp;&amp; cd ${project.basedir}/target/generated-clients/angular &amp;&amp; rm -f ../*.tgz ./*.tgz 2&gt;/dev/null; npm pack --pack-destination .. 2&gt;/dev/null || true</argument>
                             </arguments>
                         </configuration>
                     </execution>
@@ -176,7 +174,7 @@
                             <executable>bash</executable>
                             <arguments>
                                 <argument>-c</argument>
-                                <argument>cd ${project.basedir}/target/generated-clients/angular &amp;&amp; (command -v yalc &gt;/dev/null 2&gt;&amp;1 &amp;&amp; yalc publish --push || npx --yes yalc publish --push || true)</argument>
+                                <argument>export NVM_DIR="$HOME/.nvm" &amp;&amp; [ -s "$NVM_DIR/nvm.sh" ] &amp;&amp; . "$NVM_DIR/nvm.sh" &amp;&amp; cd ${project.basedir}/target/generated-clients/angular &amp;&amp; (command -v yalc &gt;/dev/null 2&gt;&amp;1 &amp;&amp; yalc publish --push || npx --yes yalc publish --push || true)</argument>
                             </arguments>
                         </configuration>
                     </execution>

@@ -43,8 +43,8 @@ public class FileServiceImpl implements FileService {
     }
 
     private FileStoreModel createNewFileStoreModel(String fileName, InputStream stream) {
-        val fileStoreModel = new FileStoreModel();
         try {
+            val fileStoreModel = new FileStoreModel();
             fileStoreModel.setFileName(fileName);
             String contentType = URLConnection.guessContentTypeFromName(fileName);
             fileStoreModel.setUrl(fileStoreService.uploadFile(fileName, "campaigns", contentType,
