@@ -16,7 +16,6 @@ import org.jacobo.adyd.domain.service.FileService;
 import org.jacobo.adyd.infraestructure.mapper.CampaignDtoMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -37,28 +36,24 @@ public class CampaignServiceImpl implements CampaignService {
 
     @Override
     @Transactional(readOnly = true)
-    @PreAuthorize("hasAnyRole('admin', 'master', 'player')")
     public Page<CampaignModel> findAll(PageRequest pageable) {
         return campaignRepository.findAll(pageable);
     }
 
     @Override
     @Transactional(readOnly = true)
-    @PreAuthorize("hasAnyRole('admin', 'master', 'player')")
     public CampaignModel findById(Long id) {
         return campaignRepository.findById(id).orElseThrow(() -> new NotFoundRunTimeException("Campaign not found"));
     }
 
     @Override
     @Transactional
-    @PreAuthorize("hasAnyRole('admin')")
     public CampaignModel create(CampaignModel campaign) {
         return campaignRepository.save(campaign);
     }
 
     @Override
     @Transactional
-    @PreAuthorize("hasAnyRole('admin')")
     public CampaignModel update(CampaignModel campaign) throws IOException {
         val currentCampaign = campaignRepository.findById(campaign.getId()).orElseThrow(() -> new NotFoundRunTimeException("Campaign not found"));
         if (campaign.getCampaignImage() != null && campaign.getCampaignImage().exists()) {
@@ -69,10 +64,8 @@ public class CampaignServiceImpl implements CampaignService {
         return campaignRepository.save(campaignMapper.getModifiedCampaignModel(currentCampaign, campaign));
     }
 
-
     @Override
     @Transactional
-    @PreAuthorize("hasAnyRole('admin', 'master', 'player')")
     public CampaignRaceModel findAllRacesByCampaignId(Long campaignId) {
         return campaignRepository.findAllRacesByCampaignId(campaignId)
                 .orElseThrow(() -> new NotFoundRunTimeException("Campaign not found"));
@@ -80,14 +73,12 @@ public class CampaignServiceImpl implements CampaignService {
 
     @Override
     @Transactional
-    @PreAuthorize("hasAnyRole('admin')")
     public void deleteCampaign(Long id) {
         campaignRepository.deleteById(id);
     }
 
     @Override
     @Transactional
-    @PreAuthorize("hasAnyRole('admin')")
     public void deleteCampaignRace(Long campaignId, Long raceId) {
         val campaign = campaignRepository.findById(campaignId).orElseThrow(() -> new NotFoundRunTimeException("Campaign not found"));
         campaign.getRaces().removeIf(r -> r.getId().equals(raceId));

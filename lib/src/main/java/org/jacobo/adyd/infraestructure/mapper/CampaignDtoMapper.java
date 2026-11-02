@@ -12,7 +12,7 @@ import org.springframework.data.domain.Page;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = {RaceDtoMapper.class, PlayerClassDtoMapper.class})
+@Mapper(componentModel = "spring", uses = {RaceDtoMapper.class, PlayerClassDtoMapper.class}, nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface CampaignDtoMapper {
 
     @Mapping(target = "fileStoreUrl", source = "fileStore.url")
@@ -41,7 +41,6 @@ public interface CampaignDtoMapper {
     @Mapping(target = "races", ignore = true)
     @Mapping(target = "playerClasses", ignore = true)
     @Mapping(target = "name", conditionExpression = "java(source.getName() == null)", ignore = true)
-    @NullValuePropertyMappingStrategy(NullValuePropertyMappingStrategy.IGNORE)
     CampaignModel getModifiedCampaignModel(@MappingTarget CampaignModel target, CampaignModel source);
 
     @Mapping(target = "campaign", source = "campaignName")

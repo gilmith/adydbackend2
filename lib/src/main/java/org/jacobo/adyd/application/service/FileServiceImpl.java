@@ -9,7 +9,7 @@ import org.jacobo.adyd.domain.model.FileStoreModel;
 import org.jacobo.adyd.domain.repository.FileStoreRepository;
 import org.jacobo.adyd.domain.service.FileService;
 import org.jacobo.adyd.domain.service.FileStoreService;
-import org.springframework.security.access.prepost.PreAuthorize;
+
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -27,13 +27,11 @@ public class FileServiceImpl implements FileService {
 
 
     @Override
-    @PreAuthorize("hasAnyRole('admin', 'master')")
     public Boolean existsFileInStorage(String fileName, String bucket) {
         return fileStoreService.exists(fileName, bucket);
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('admin')")
     public FileStoreModel uploadAndGenerateUrl(String fileName, InputStream stream) {
         return fileStoreRepository.findByFileName(fileName)
                 .map(fileStoreModel ->
@@ -70,7 +68,6 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    @PreAuthorize("hasAnyRole('admin', 'master', 'player')")
     public FileStoreModel getFileByName(String fileName) {
         return null;
     }

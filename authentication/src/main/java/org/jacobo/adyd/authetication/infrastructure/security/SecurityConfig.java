@@ -1,6 +1,5 @@
 package org.jacobo.adyd.authetication.infrastructure.security;
 
-
 import lombok.val;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,18 +23,19 @@ import java.util.List;
 @EnableMethodSecurity
 public class SecurityConfig {
 
+    private final CasbinAuthorizationManager casbinAuthorizationManager;
+
+    public SecurityConfig(CasbinAuthorizationManager casbinAuthorizationManager) {
+        this.casbinAuthorizationManager = casbinAuthorizationManager;
+    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(setCorsConfig()))
                 .authorizeHttpRequests(auth ->
                         auth.requestMatchers("/swagger/**").permitAll()
-                                .requestMatchers(HttpMethod.OPTIONS, "/**").authenticated()
-                                .requestMatchers(HttpMethod.GET, "/**").authenticated()
-                                .requestMatchers(HttpMethod.POST, "/**").authenticated()
-                                .requestMatchers(HttpMethod.PATCH, "/**").authenticated()
-                                .requestMatchers(HttpMethod.DELETE, "/**").authenticated()
-                                .requestMatchers(HttpMethod.PUT, "/**").authenticated())
+                                .anyRequest().access(casbinAuthorizationManager))
                 .oauth2ResourceServer(oauth2 ->
                         oauth2.jwt(jwt ->
                                 jwt.jwtAuthenticationConverter(jwtAuthenticator()))
@@ -55,11 +55,6 @@ public class SecurityConfig {
 
     private Converter<Jwt, ? extends AbstractAuthenticationToken> jwtAuthenticator() {
         KeycloakRealmRoleConverter roleConverter = new KeycloakRealmRoleConverter();
-
-        // Envolverlo en tu convertidor custom que genera el CustomJwtAuthenticationToken
         return new CustomJwtAuthenticationConverter(roleConverter);
     }
-
-
-
 }
