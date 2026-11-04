@@ -409,6 +409,21 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CharacteristicDto'
+  /characteristic/builtin/race:
+    get:
+      summary: list of built-in characteristics
+      operationId: getBuiltin
+      tags:
+        - characteristic-controller
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CharacteristicBuiltInDto'
   /player-class:
     get:
       summary: get all player class
@@ -732,6 +747,7 @@ components:
           format: int64
         code:
           type: string
+          description: It has free text for custom characteristics and enum for build-in
         name:
           type: string
         value:
@@ -936,6 +952,26 @@ components:
         bendBars:
           type: integer
           format: int32
+    CharacteristicBuiltInDto:
+      type: object
+      required:
+        - name
+        - type
+      properties:
+        name:
+          type: string
+          enum:
+            - STRENGTH_MINIMUM_RACE
+            - DEXTERITY_MINIMUM_RACE
+            - CONSTITUTION_MINIMUM_RACE
+            - INTELLIGENCE_MINIMUM_RACE
+            - WISDOM_MINIMUM_RACE
+            - CHARISMA_MINIMUM_RACE
+        type:
+          type: string
+          enum:
+            - INTEGER
+            - STRING
   parameters:
     page:
       name: page

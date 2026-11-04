@@ -1,5 +1,6 @@
 package org.jacobo.adyd.domain.service;
 
+import org.jacobo.adyd.domain.model.CharacteristicBuildInModel;
 import org.jacobo.adyd.domain.model.CharacteristicModel;
 
 import java.util.List;
@@ -13,7 +14,7 @@ public interface CharacteristicService {
 
     Optional<CharacteristicModel> findByCode(String code);
 
-    List<String> getBuiltInCharacteristics();
+    List<CharacteristicBuildInModel> getBuiltInCharacteristics();
 
     CharacteristicModel updateCharacteristic(Long raceId, Long characteristicId, CharacteristicModel model);
 }

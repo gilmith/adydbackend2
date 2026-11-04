@@ -41,10 +41,7 @@ public class RaceCharacteristicController implements RaceCharacteristicControlle
         return ResponseEntity.ok(raceCharacteristicDtoMapper.toDto(raceCharacteristicService.getRaceById(raceId)));
     }
 
-    @Override
-    public ResponseEntity<List<String>> getBuiltInCharacteristics(){
-        return ResponseEntity.ok(characteristicService.getBuiltInCharacteristics());
-    }
+
     @Override
     public ResponseEntity<CharacteristicDto> updateRaceCharacteristic(Long raceId, Long characteristicId, CharacteristicToModifyDto characteristicToModifyDto) {
         val result = characteristicService.updateCharacteristic(raceId, characteristicId, characteristicDtoMapper.toModel(characteristicToModifyDto));

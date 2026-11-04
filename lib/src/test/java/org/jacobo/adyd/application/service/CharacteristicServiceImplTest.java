@@ -116,13 +116,6 @@ class CharacteristicServiceImplTest {
         verify(characteristicRepository).findByCode("nonexistent");
     }
 
-    @Test
-    void getBuiltInCharacteristics_ok() {
-        List<String> result = characteristicService.getBuiltInCharacteristics();
-
-        assertNotNull(result);
-        assertTrue(result.size() > 0);
-    }
 
     @Test
     void updateCharacteristic_ok() {

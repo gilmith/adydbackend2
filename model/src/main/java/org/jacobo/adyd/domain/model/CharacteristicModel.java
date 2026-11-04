@@ -15,6 +15,7 @@ import lombok.experimental.SuperBuilder;
 public class CharacteristicModel extends BaseModel{
 
     private Long id;
+    private BuiltInPlayerCharacteristicsEnum builtInPlayerCharacteristicsEnum;
     private String code;
     private String name;
     private String description;

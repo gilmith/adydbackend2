@@ -46,8 +46,11 @@ public class CharacteristicServiceImpl implements CharacteristicService {
     }
 
     @Override
-    public List<String> getBuiltInCharacteristics() {
-        return Arrays.stream(BuiltInCharacteristicsEnum.values()).map(it -> it.getCharacteristicMeta().getCode()).toList();
+    public List<CharacteristicBuildInModel> getBuiltInCharacteristics() {
+        return Arrays.stream(BuiltInCharacteristicsEnum.values())
+                .map(builtInCharacteristicsEnum ->
+                        new CharacteristicBuildInModel(builtInCharacteristicsEnum.getCharacteristicMeta().getCode(),
+                                builtInCharacteristicsEnum.getCharacteristicMeta().getType().name())).toList();
     }
 
     @Override

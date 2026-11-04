@@ -24,7 +24,7 @@
     <packaging>pom</packaging>
     <name>adydbackend2</name>
 
-<modules>
+    <modules>
         <module>model</module>
         <module>file-store</module>
         <module>lib</module>
@@ -32,7 +32,7 @@
         <module>api</module>
         <module>authentication</module>
         <module>app</module>
-</modules>
+    </modules>
 
     <properties>
         <java.version>25</java.version>
@@ -46,6 +46,7 @@
         <aws-sdk.version>2.55.7</aws-sdk.version>
         <mockito.version>5.18.0</mockito.version>
         <casbin.version>2.0.0</casbin.version>
+        <google-guava.version>33.7.2-jre</google-guava.version>
     </properties>
 
     <dependencyManagement>
@@ -110,6 +111,11 @@
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok-mapstruct-binding</artifactId>
                 <version>${lombok-mapstruct-binding.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${google-guava.version}</version>
             </dependency>
 
             <!-- Swagger / OpenAPI annotations -->
@@ -207,6 +213,31 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.5.0</version>
+                <inherited>false</inherited>
+
+                <executions>
+                    <execution>
+                        <id>code-graph</id>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>infigraph</executable>
+                            <workingDirectory>
+                                ${maven.multiModuleProjectDirectory}
+                            </workingDirectory>
+                            <arguments>
+                                <argument>index</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
 
