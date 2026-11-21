@@ -3,6 +3,8 @@ package org.jacobo.adyd.application.service;
 
 import lombok.RequiredArgsConstructor;
 import org.jacobo.adyd.domain.exception.NotFoundRunTimeException;
+import org.jacobo.adyd.domain.model.BuiltInPlayerCharacteristicsEnum;
+import org.jacobo.adyd.domain.model.CharacteristicBuildInModel;
 import org.jacobo.adyd.domain.model.PlayerClassModel;
 import org.jacobo.adyd.domain.repository.PlayerClassRepository;
 import org.jacobo.adyd.domain.service.PlayerClassService;
@@ -12,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import java.util.Arrays;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -49,5 +52,13 @@ public class PlayerClassServiceImpl implements PlayerClassService {
     @Override
     public PlayerClassModel getPlayerClassById(Long playerClassId) {
         return playerClassRepository.findById(playerClassId).orElseThrow(() -> new NotFoundRunTimeException("Player class not found"));
+    }
+
+    @Override
+    public List<CharacteristicBuildInModel> getAllBuiltIn() {
+        return Arrays.stream(BuiltInPlayerCharacteristicsEnum.values())
+                 .map(builtInCharacteristicsEnum ->
+                        new CharacteristicBuildInModel(builtInCharacteristicsEnum.getCharacteristicMeta().getCode(),
+                            builtInCharacteristicsEnum.getCharacteristicMeta().getType().name())).toList();
     }
 }

@@ -465,6 +465,21 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BadRequest'
+  /player-class/builtin:
+    get:
+      summary: get player class built in characteristic
+      operationId: getPlayerClassBuiltIn
+      tags:
+        - player-class-controller
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CharacteristicBuiltInDto'
   /player-class/{playerClassId}:
     get:
       summary: get player class by id
@@ -967,6 +982,12 @@ components:
             - INTELLIGENCE_MINIMUM_RACE
             - WISDOM_MINIMUM_RACE
             - CHARISMA_MINIMUM_RACE
+            - STRENGTH_MINIMUM_CLASS
+            - DEXTERITY_MINIMUM_CLASS
+            - CONSTITUTION_MINIMUM_CLASS
+            - INTELLIGENCE_MINIMUM_CLASS
+            - WISDOM_MINIMUM_CLASS
+            - CHARISMA_MINIMUM_CLASS
         type:
           type: string
           enum:
