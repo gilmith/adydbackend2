@@ -25,6 +25,7 @@ public class PlayerClassController implements PlayerClassControllerApi {
 
     @Override
     public ResponseEntity<PaginatedDto> getAllPlayerClass(
+            String xAPIVersion,
             Integer page,
             Integer size,
             String sort
@@ -34,22 +35,22 @@ public class PlayerClassController implements PlayerClassControllerApi {
     }
 
     @Override
-    public ResponseEntity<PlayerClassDto> getPlayerClassById(Long id){
+    public ResponseEntity<PlayerClassDto> getPlayerClassById(Long id, String xAPIVersion){
         return ResponseEntity.ok(playerClassDtoMapper.toDto(playerClassService.getById(id)));
     }
 
     @Override
-    public ResponseEntity<PlayerClassDto> createNewPlayerClass(PlayerClassDto playerClassDto) {
+    public ResponseEntity<PlayerClassDto> createNewPlayerClass(String xAPIVersion, PlayerClassDto playerClassDto) {
         return ResponseEntity.ok(playerClassDtoMapper.toDto(playerClassService.createNewPlayerClass(playerClassDtoMapper.toModel(playerClassDto))));
     }
     @Override
-    public ResponseEntity<Void> deletePlayerClassById(Long playerClassId) {
+    public ResponseEntity<Void> deletePlayerClassById(Long playerClassId, String xAPIVersion) {
         playerClassService.deleteById(playerClassId);
         return ResponseEntity.noContent().build();
     }
 
     @Override
-    public ResponseEntity<List<CharacteristicBuiltInDto>> getPlayerClassBuiltIn() {
+    public ResponseEntity<List<CharacteristicBuiltInDto>> getPlayerClassBuiltIn(String xAPIVersion) {
         return ResponseEntity.ok(characteristicDtoMapper.toDtos(playerClassService.getAllBuiltIn()));
     }
 

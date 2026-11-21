@@ -31,19 +31,19 @@ public class RaceCharacteristicController implements RaceCharacteristicControlle
     private final RaceCharacteristicDtoMapper raceCharacteristicDtoMapper;
 
     @Override
-    public ResponseEntity<RaceDto> addCharacteristicToRace(Long raceId, CharacteristicDto characteristicDto) {
+    public ResponseEntity<RaceDto> addCharacteristicToRace(Long raceId, String xAPIVersion, CharacteristicDto characteristicDto) {
         val result = characteristicService.createNewProperty(raceId, characteristicDtoMapper.toModel(characteristicDto), characteristicDto.getValue());
         return ResponseEntity.ok(raceDtoMapper.toDto(raceService.getRaceById(raceId)));
     }
 
     @Override
-    public ResponseEntity<RaceCharacteristicDto> getRaceCharacteristicsById(Long raceId){
+    public ResponseEntity<RaceCharacteristicDto> getRaceCharacteristicsById(Long raceId, String xAPIVersion){
         return ResponseEntity.ok(raceCharacteristicDtoMapper.toDto(raceCharacteristicService.getRaceById(raceId)));
     }
 
 
     @Override
-    public ResponseEntity<CharacteristicDto> updateRaceCharacteristic(Long raceId, Long characteristicId, CharacteristicToModifyDto characteristicToModifyDto) {
+    public ResponseEntity<CharacteristicDto> updateRaceCharacteristic(Long raceId, Long characteristicId, String xAPIVersion, CharacteristicToModifyDto characteristicToModifyDto) {
         val result = characteristicService.updateCharacteristic(raceId, characteristicId, characteristicDtoMapper.toModel(characteristicToModifyDto));
         return ResponseEntity.ok(characteristicDtoMapper.toDto(result));
     }

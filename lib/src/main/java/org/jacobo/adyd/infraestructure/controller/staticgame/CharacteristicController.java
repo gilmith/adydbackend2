@@ -23,13 +23,14 @@ public class CharacteristicController implements CharacteristicControllerApi {
 
     @Override
     public ResponseEntity<CharacteristicDto> createNewCharacteristic(
+           String xAPIVersion,
            CharacteristicDto characteristicDto
     ){
         return null;
     }
 
     @Override
-    public ResponseEntity<List<CharacteristicBuiltInDto>> getBuiltin() {
+    public ResponseEntity<List<CharacteristicBuiltInDto>> getBuiltin(String xAPIVersion) {
         return ResponseEntity.ok(characteristicDtoMapper.toDtos(characteristicService.getBuiltInCharacteristics()));
     }
 

@@ -2,14 +2,16 @@ openapi: 3.1.0
 info:
   title: adyd_openapi
   description: open api adyd
-  version: 1.0.0
+  version: "1.0"
 
 servers:
   - url: 'api'
 security:
-  - bearerAuth: []
+  - BearerAuth: []
 paths:
   /campaign:
+    parameters:
+      - $ref: '#/components/parameters/XApiVersion'
     get:
       summary: Get all campaigns
       operationId: getAllCampaign
@@ -51,6 +53,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/CampaignDto'
   /campaign/{campaignId}:
+    parameters:
+      - $ref: '#/components/parameters/XApiVersion'
     get:
       summary: get campaign by id
       operationId: getCampaignById
@@ -118,6 +122,8 @@ paths:
         '202':
           description: 'accepted'
   /campaign/{campaignId}/race:
+    parameters:
+      - $ref: '#/components/parameters/XApiVersion'
     get:
       summary: get all available races for campaign
       operationId: getRaceByCampaignId
@@ -133,6 +139,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/CampaignRaceDto'
   /campaign/{campaignId}/player-class:
+    parameters:
+      - $ref: '#/components/parameters/XApiVersion'
     get:
       summary: get all available player classes for campaign
       operationId: getPlayerClassForCampaign
@@ -148,6 +156,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/CampaignPlayerClassDto'
   /campaign/{campaignId}/player-class/{playerClassId}:
+    parameters:
+      - $ref: '#/components/parameters/XApiVersion'
     post:
       summary: add relation between player class and campaign
       operationId: addPlayerClassInCampaign
@@ -174,6 +184,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/CampaignPlayerClassDto'
   /campaign/{campaignId}/race/{raceId}:
+    parameters:
+      - $ref: '#/components/parameters/XApiVersion'
     post:
       summary: add relation between race and campaign
       operationId: addRaceInCampaign
@@ -219,6 +231,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/NotFoundDto'
   /race:
+    parameters:
+      - $ref: '#/components/parameters/XApiVersion'
     get:
       summary: get all races
       operationId: getAllRaces
@@ -254,6 +268,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/RaceDto'
   /race/{raceId}:
+    parameters:
+      - $ref: '#/components/parameters/XApiVersion'
     delete:
       summary: delete race
       operationId: deleteRace
@@ -312,6 +328,8 @@ paths:
         404:
           description: Not found
   /race/{raceId}/characteristic:
+    parameters:
+      - $ref: '#/components/parameters/XApiVersion'
     get:
       summary: race by id characteristics to create a character
       operationId: getRaceCharacteristicsById
@@ -356,6 +374,8 @@ paths:
         404:
           description: Not found
   /race/{raceId}/characteristic/{characteristicId}:
+    parameters:
+      - $ref: '#/components/parameters/XApiVersion'
     patch:
       summary: update race characteristic
       operationId: updateRaceCharacteristic
@@ -378,6 +398,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/CharacteristicDto'
   /race/builtin:
+    parameters:
+      - $ref: '#/components/parameters/XApiVersion'
     get:
       summary: get built in characteristics name
       operationId: getBuiltInCharacteristics
@@ -391,6 +413,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/BuiltInDto'
   /characteristic:
+    parameters:
+      - $ref: '#/components/parameters/XApiVersion'
     post:
       summary: create a new built-in characteristic
       operationId: createNewCharacteristic
@@ -410,6 +434,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/CharacteristicDto'
   /characteristic/builtin/race:
+    parameters:
+      - $ref: '#/components/parameters/XApiVersion'
     get:
       summary: list of built-in characteristics
       operationId: getBuiltin
@@ -425,6 +451,8 @@ paths:
                 items:
                   $ref: '#/components/schemas/CharacteristicBuiltInDto'
   /player-class:
+    parameters:
+      - $ref: '#/components/parameters/XApiVersion'
     get:
       summary: get all player class
       operationId: getAllPlayerClass
@@ -466,6 +494,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/BadRequest'
   /player-class/builtin:
+    parameters:
+      - $ref: '#/components/parameters/XApiVersion'
     get:
       summary: get player class built in characteristic
       operationId: getPlayerClassBuiltIn
@@ -481,6 +511,8 @@ paths:
                 items:
                   $ref: '#/components/schemas/CharacteristicBuiltInDto'
   /player-class/{playerClassId}:
+    parameters:
+      - $ref: '#/components/parameters/XApiVersion'
     get:
       summary: get player class by id
       operationId: getPlayerClassById
@@ -514,6 +546,8 @@ paths:
         204:
           description: OK
   /player-class/{playerClassId}/characteristic:
+    parameters:
+      - $ref: '#/components/parameters/XApiVersion'
     get:
       summary: get all player class characteristics
       operationId: getPlayerClassCharacteristics
@@ -550,6 +584,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/CharacteristicDto'
   /alignment:
+    parameters:
+      - $ref: '#/components/parameters/XApiVersion'
     get:
       operationId: getAllAlignment
       tags:
@@ -574,6 +610,8 @@ paths:
         404:
           description: Not Found
   /abilities/{ability}/{id}:
+    parameters:
+      - $ref: '#/components/parameters/XApiVersion'
     get:
       tags:
         - abilities-controller
@@ -994,6 +1032,14 @@ components:
             - INTEGER
             - STRING
   parameters:
+    XApiVersion:
+      name: X-API-Version
+      in: header
+      required: true
+      description: Version del API solicitada.
+      schema:
+        type: string
+      example: "1.0"
     page:
       name: page
       in: query

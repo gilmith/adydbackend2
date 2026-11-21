@@ -19,7 +19,8 @@ public class AbilitiesController implements AbilitiesControllerApi {
     @Override
     public ResponseEntity<AbilityDto> getAbilityByid(
             String ability,
-            Long id
+            Long id,
+            String xAPIVersion
     ) {
         return ResponseEntity.ok(abilitiesDtoMapper
                 .toDto(abilitiesService
