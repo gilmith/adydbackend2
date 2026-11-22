@@ -19,7 +19,7 @@ public class AlignmentController implements AlignmentControllerApi {
     private final AlignmentDtoMapper alignmentDtoMapper;
 
     @Override
-    public ResponseEntity<PaginatedDto> getAllAlignment(Integer page, Integer size, String sort) {
+    public ResponseEntity<PaginatedDto> getAllAlignment(String xAPIVersion, Integer page, Integer size, String sort) {
         val pagination = PageMapper.of(page, size, sort);
         return  ResponseEntity.ok(alignmentDtoMapper
                 .toDto(alignmentService.getAll(pagination)));

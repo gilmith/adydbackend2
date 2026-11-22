@@ -12,3 +12,6 @@ out/
 #opencode
 opencode.json
 app/src/main/resources/application.yaml
+
+#.infinigraph
+./infigraph

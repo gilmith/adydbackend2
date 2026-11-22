@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.1.1</version>
+        <version>4.2.0</version>
         <relativePath/>
     </parent>
     <distributionManagement>
@@ -24,7 +24,7 @@
     <packaging>pom</packaging>
     <name>adydbackend2</name>
 
-<modules>
+    <modules>
         <module>model</module>
         <module>file-store</module>
         <module>lib</module>
@@ -32,20 +32,26 @@
         <module>api</module>
         <module>authentication</module>
         <module>app</module>
-</modules>
+        <module>mcp</module>
+    </modules>
 
     <properties>
         <java.version>25</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <mapstruct.version>1.6.3</mapstruct.version>
         <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
-        <swagger.version>2.2.43</swagger.version>
-        <spring-boot.version>4.1.2</spring-boot.version>
+        <swagger.version>3.0.0</swagger.version>
+        <swagger-parser.version>2.1.49</swagger-parser.version>
+        <swagger-jakarta.version>2.2.56</swagger-jakarta.version>
+        <spring-boot.version>4.2.0</spring-boot.version>
+        <spring-mcp.version>2.1.0</spring-mcp.version>
+        <spring-doc.version>3.2.0</spring-doc.version>
         <postgresql.version>42.7.12</postgresql.version>
-        <openapi-generator.version>7.25.0</openapi-generator.version>
-        <aws-sdk.version>2.55.7</aws-sdk.version>
+        <openapi-generator.version>7.27.0</openapi-generator.version>
+        <aws-sdk.version>2.59.4</aws-sdk.version>
         <mockito.version>5.18.0</mockito.version>
         <casbin.version>2.0.0</casbin.version>
+        <google-guava.version>33.8.0-jre</google-guava.version>
     </properties>
 
     <dependencyManagement>
@@ -77,6 +83,47 @@
                 <artifactId>spring-boot-starter-aop</artifactId>
                 <version>${spring-boot.version}</version>
             </dependency>
+
+            <!-- Source: https://mvnrepository.com/artifact/org.springframework.ai/spring-ai-starter-mcp-server -->
+            <dependency>
+                <groupId>org.springframework.ai</groupId>
+                <artifactId>spring-ai-starter-mcp-server</artifactId>
+                <version>${spring-mcp.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.ai</groupId>
+                <artifactId>spring-ai-starter-mcp-server-webmvc</artifactId>
+                <version>${spring-mcp.version}</version>
+            </dependency>
+
+            <!-- Source: https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-actuator -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-actuator</artifactId>
+                <version>${spring-boot.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-starter-webmvc-api</artifactId>
+                <version>${spring-doc.version}</version>
+            </dependency>
+
+            <!-- Source: https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-oauth2-resource-server -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+                <version>${spring-boot.version}</version>
+            </dependency>
+
+            <!-- Source: https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-oauth2-client -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-oauth2-client</artifactId>
+                <version>${spring-boot.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>org.postgresql</groupId>
                 <artifactId>postgresql</artifactId>
@@ -111,12 +158,28 @@
                 <artifactId>lombok-mapstruct-binding</artifactId>
                 <version>${lombok-mapstruct-binding.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${google-guava.version}</version>
+            </dependency>
 
             <!-- Swagger / OpenAPI annotations -->
             <dependency>
                 <groupId>io.swagger.core.v3</groupId>
                 <artifactId>swagger-annotations-jakarta</artifactId>
                 <version>${swagger.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.swagger.parser.v3</groupId>
+                <artifactId>swagger-parser</artifactId>
+                <version>${swagger-parser.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.swagger.core.v3</groupId>
+                <artifactId>swagger-annotations-jakarta</artifactId>
+                <version>${swagger-jakarta.version}</version>
             </dependency>
 
             <!-- testing -->
@@ -207,6 +270,31 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.5.0</version>
+                <inherited>false</inherited>
+
+                <executions>
+                    <execution>
+                        <id>code-graph</id>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>infigraph</executable>
+                            <workingDirectory>
+                                ${maven.multiModuleProjectDirectory}
+                            </workingDirectory>
+                            <arguments>
+                                <argument>index</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
 

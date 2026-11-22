@@ -22,7 +22,7 @@ public class PlayerClassCharacteristicsController implements PlayerClassCharacte
 
 
     @Override
-    public ResponseEntity<List<CharacteristicDto>> getPlayerClassCharacteristics(Long playerClassId){
+    public ResponseEntity<List<CharacteristicDto>> getPlayerClassCharacteristics(Long playerClassId, String xAPIVersion){
         return ResponseEntity.ok(playerClassCharacteristicService.getPlayerClassCharacteristics(playerClassId)
                 .getCharacteristics().stream()
                 .map(characteristicDtoMapper::toDto)
@@ -30,7 +30,7 @@ public class PlayerClassCharacteristicsController implements PlayerClassCharacte
     }
 
     @Override
-    public ResponseEntity<CharacteristicDto> addCharacteristicToPlayerClass(Long playerClassId, CharacteristicDto playerClassCharacteristicDto) {
+    public ResponseEntity<CharacteristicDto> addCharacteristicToPlayerClass(Long playerClassId, String xAPIVersion, CharacteristicDto playerClassCharacteristicDto) {
         return ResponseEntity.ok(characteristicDtoMapper.toDto(  characteristicService.createNewPropertyPlayer(
                 playerClassId, characteristicDtoMapper.toModel(playerClassCharacteristicDto), playerClassCharacteristicDto.getValue())));
     }

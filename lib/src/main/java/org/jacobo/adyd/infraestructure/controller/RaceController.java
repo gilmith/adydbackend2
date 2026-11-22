@@ -29,6 +29,7 @@ public class RaceController implements RaceControllerApi {
 
     @Override
     public ResponseEntity<PaginatedDto> getAllRaces(
+            String xAPIVersion,
             Integer page,
             Integer size,
             String sort
@@ -38,23 +39,23 @@ public class RaceController implements RaceControllerApi {
     }
 
     @Override
-    public ResponseEntity<RaceDto> createNewRace(RaceDto raceDto){
+    public ResponseEntity<RaceDto> createNewRace(String xAPIVersion, RaceDto raceDto){
         return ResponseEntity.ok(raceDtoMapper.toDto(raceService.createNewRace(raceDtoMapper.toModel(raceDto))));
     }
 
     @Override
-    public ResponseEntity<Void> deleteRace(Long raceId) {
+    public ResponseEntity<Void> deleteRace(Long raceId, String xAPIVersion) {
         raceService.deleteRace(raceId);
         return ResponseEntity.accepted().build();
     }
 
     @Override
-    public ResponseEntity<RaceDto> getRaceById(Long raceId) {
+    public ResponseEntity<RaceDto> getRaceById(Long raceId, String xAPIVersion) {
         return ResponseEntity.ok(raceDtoMapper.toDto(raceService.getRaceById(raceId)));
     }
 
     @Override
-    public ResponseEntity<RaceDto> modifyRace(Long raceId, RaceDto raceDto) {
+    public ResponseEntity<RaceDto> modifyRace(Long raceId, String xAPIVersion, RaceDto raceDto) {
         return ResponseEntity.ok(raceDtoMapper.toDto(raceService.updateRace(raceId, raceDtoMapper.toModel(raceDto))));
     }
 }

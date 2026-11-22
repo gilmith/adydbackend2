@@ -25,23 +25,23 @@ public class CampaignController implements CampaignControllerApi {
     private final CampaignDtoMapper campaignMapper;
 
     @Override
-    public ResponseEntity<PaginatedDto> getAllCampaign(Integer page, Integer size, String sort){
+    public ResponseEntity<PaginatedDto> getAllCampaign(String xAPIVersion, Integer page, Integer size, String sort){
         val pagination = PageMapper.of(page, size, sort);
         return ResponseEntity.ok(campaignMapper.toDto(campaignService.findAll(pagination)));
     }
 
     @Override
-    public ResponseEntity<CampaignDto> getCampaignById(Long campaignId) {
+    public ResponseEntity<CampaignDto> getCampaignById(Long campaignId, String xAPIVersion) {
         return ResponseEntity.ok(campaignMapper.toDto(campaignService.findById(campaignId)));
     }
 
     @Override
-    public ResponseEntity<CampaignDto> createCampaign(CreateCampaignDto campaignDto) {
+    public ResponseEntity<CampaignDto> createCampaign(String xAPIVersion, CreateCampaignDto campaignDto) {
         return ResponseEntity.accepted().body(campaignMapper.toDto(campaignService.create(campaignMapper.fromCreateModel(campaignDto))));
     }
 
     @Override
-    public ResponseEntity<CampaignDto> updateCampaign(Long campaignId, String name, String description, MultipartFile campaignImage) {
+    public ResponseEntity<CampaignDto> updateCampaign(Long campaignId, String xAPIVersion, String name, String description, MultipartFile campaignImage) {
         try {
             val model = CampaignModel.builder()
                     .id(campaignId)
@@ -56,28 +56,28 @@ public class CampaignController implements CampaignControllerApi {
     }
 
     @Override
-    public ResponseEntity<CampaignPlayerClassDto> getPlayerClassForCampaign(Long campaignId) {
+    public ResponseEntity<CampaignPlayerClassDto> getPlayerClassForCampaign(Long campaignId, String xAPIVersion) {
         return ResponseEntity.ok(campaignMapper.toCampaignPlayerClassDto(campaignService.getPlayerClassForCampaign(campaignId)));
     }
 
     @Override
-    public ResponseEntity<CampaignPlayerClassDto> addPlayerClassInCampaign(Long campaignId, Long playerClassId){
+    public ResponseEntity<CampaignPlayerClassDto> addPlayerClassInCampaign(Long campaignId, Long playerClassId, String xAPIVersion){
         campaignService.addPlayerClassInCampaign(campaignId, playerClassId);
         return ResponseEntity.accepted().build();
     }
 
     @Override
-    public ResponseEntity<CampaignRaceDto> getRaceByCampaignId(Long campaignId){
+    public ResponseEntity<CampaignRaceDto> getRaceByCampaignId(Long campaignId, String xAPIVersion){
         return ResponseEntity.ok(campaignMapper.toCampaignRaceDto(campaignService.getRaceByCampaignId(campaignId)));
     }
 
     @Override
-    public ResponseEntity<Void> addRaceInCampaign(Long campaignId, Long raceId){
+    public ResponseEntity<Void> addRaceInCampaign(Long campaignId, Long raceId, String xAPIVersion){
         campaignService.addRaceInCampaign(campaignId, raceId);
         return ResponseEntity.accepted().build();
     }
     @Override
-    public ResponseEntity<Void> deleteCampaignId(Long campaignId){
+    public ResponseEntity<Void> deleteCampaignId(Long campaignId, String xAPIVersion){
         campaignService.deleteCampaign(campaignId);
         return ResponseEntity.accepted().build();
     }

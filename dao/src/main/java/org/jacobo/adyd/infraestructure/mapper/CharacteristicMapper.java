@@ -1,5 +1,6 @@
 package org.jacobo.adyd.infraestructure.mapper;
 
+import org.jacobo.adyd.domain.model.CharacteristicBuildInModel;
 import org.jacobo.adyd.domain.model.CharacteristicModel;
 import org.jacobo.adyd.infraestructure.entities.CharacteristicsEntity;
 import org.mapstruct.BeanMapping;
@@ -21,4 +22,5 @@ public interface CharacteristicMapper {
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "id", ignore = true)
     CharacteristicModel copyValues(@MappingTarget CharacteristicModel it, CharacteristicModel model);
+
 }

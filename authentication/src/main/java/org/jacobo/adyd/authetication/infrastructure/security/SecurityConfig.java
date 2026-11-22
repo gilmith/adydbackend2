@@ -35,10 +35,13 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(setCorsConfig()))
                 .authorizeHttpRequests(auth ->
                         auth.requestMatchers("/swagger/**").permitAll()
+                                .requestMatchers("/mcp", "/mcp/**").permitAll()
+                                .requestMatchers("/mcp/message").permitAll()
+                                .requestMatchers("/sse").permitAll()
+                                .requestMatchers("/actuator/**").permitAll()
                                 .anyRequest().access(casbinAuthorizationManager))
-                .oauth2ResourceServer(oauth2 ->
-                        oauth2.jwt(jwt ->
-                                jwt.jwtAuthenticationConverter(jwtAuthenticator()))
+                                .oauth2ResourceServer(oauth2 ->
+                                    oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticator()))
                 );
         return http.build();
     }
