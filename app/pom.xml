@@ -46,6 +46,12 @@
         </dependency>
 
         <dependency>
+            <groupId>org.jacobo.adyd</groupId>
+            <artifactId>mcp</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
         </dependency>
@@ -147,7 +153,7 @@
                 <executions>
                     <execution>
                         <id>prepare-docker-jar</id>
-                        <phase>pre-integration-test</phase>
+                        <phase>package</phase>
                         <goals>
                             <goal>run</goal>
                         </goals>
@@ -180,7 +186,7 @@
                             <name>${docker.image.name}:${docker.image.version}</name>
 
                             <build>
-                                <dockerFile>${project.build.directory}/docker-context/Dockerfile</dockerFile>
+                                <dockerFile>Dockerfile</dockerFile>
                                 <contextDir>${project.build.directory}/docker-context</contextDir>
                             </build>
                         </image>
