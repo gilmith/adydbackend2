@@ -3,6 +3,7 @@ package org.jacobo.adyd.config;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
+import org.jacobo.adyd.api.dto.BadRequest;
 import org.jacobo.adyd.api.dto.InternalServerErrorDto;
 import org.jacobo.adyd.api.dto.NotFoundDto;
 import org.jacobo.adyd.domain.exception.AdydException;
@@ -11,6 +12,7 @@ import org.jacobo.adyd.domain.exception.NotFoundRunTimeException;
 import org.springframework.data.core.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -64,5 +66,12 @@ public class GlobalExceptionHandler {
         log.error("Unexpected error", e);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new InternalServerErrorDto().message("Internal Server Error"));
+    }
+
+    @ExceptionHandler(MissingRequestHeaderException.class)
+    public ResponseEntity<BadRequest> handleHeaderException(MissingRequestHeaderException e){
+        log.error("Missign header error", e);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new BadRequest().message("check request"));
     }
 }

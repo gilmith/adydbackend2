@@ -83,7 +83,17 @@
                                 <interfaceOnly>true</interfaceOnly>
                                 <useBeanValidation>true</useBeanValidation>
                                 <openApiNullable>false</openApiNullable>
+                                <library>spring-boot</library>
+                                <useJakartaEe>true</useJakartaEe>
+                                <!-- Añadir @JsonInclude(NON_NULL) automáticamente -->
+                                <useJsonInclude>true</useJsonInclude>
                             </configOptions>
+                            <typeMappings>
+                                <typeMapping>OffsetDateTime=LocalDateTime</typeMapping>
+                            </typeMappings>
+                            <importMappings>
+                                <importMapping>OffsetDateTime=java.time.LocalDateTime</importMapping>
+                            </importMappings>
                         </configuration>
                     </execution>
                     <execution>
