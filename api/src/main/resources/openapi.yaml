@@ -712,6 +712,8 @@ components:
       required:
         - name
         - id
+      x-spring-annotations:
+        - '@JsonInclude(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL)'
       properties:
         id:
           type: integer
@@ -721,6 +723,11 @@ components:
         fileStoreUrl:
           type: string
         description:
+          type: string
+        lastUpdate:
+          type: string
+          format: date-time
+        lastUpdater:
           type: string
     CampaignRaceDto:
       type: object

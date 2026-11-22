@@ -27,17 +27,17 @@ public class CampaignController implements CampaignControllerApi {
     @Override
     public ResponseEntity<PaginatedDto> getAllCampaign(String xAPIVersion, Integer page, Integer size, String sort){
         val pagination = PageMapper.of(page, size, sort);
-        return ResponseEntity.ok(campaignMapper.toDto(campaignService.findAll(pagination)));
+        return ResponseEntity.ok(campaignMapper.toDto(campaignService.findAll(pagination), xAPIVersion));
     }
 
     @Override
     public ResponseEntity<CampaignDto> getCampaignById(Long campaignId, String xAPIVersion) {
-        return ResponseEntity.ok(campaignMapper.toDto(campaignService.findById(campaignId)));
+        return ResponseEntity.ok(campaignMapper.toDto(campaignService.findById(campaignId), xAPIVersion));
     }
 
     @Override
     public ResponseEntity<CampaignDto> createCampaign(String xAPIVersion, CreateCampaignDto campaignDto) {
-        return ResponseEntity.accepted().body(campaignMapper.toDto(campaignService.create(campaignMapper.fromCreateModel(campaignDto))));
+        return ResponseEntity.accepted().body(campaignMapper.toDto(campaignService.create(campaignMapper.fromCreateModel(campaignDto)), xAPIVersion));
     }
 
     @Override
@@ -49,7 +49,7 @@ public class CampaignController implements CampaignControllerApi {
                     .campaignDescription(description)
                     .campaignImage(campaignImage == null ? null : campaignImage.getResource())
                     .build();
-            return ResponseEntity.accepted().body(campaignMapper.toDto(campaignService.update(model)));
+            return ResponseEntity.accepted().body(campaignMapper.toDto(campaignService.update(model),xAPIVersion));
         } catch (java.io.IOException e) {
             throw new RuntimeException(e);
         }
