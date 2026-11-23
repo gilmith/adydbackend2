@@ -6,6 +6,7 @@ import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.parser.OpenAPIV3Parser;
 import io.swagger.v3.parser.core.models.ParseOptions;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.ai.chat.model.ToolContext;
 import org.springframework.ai.mcp.McpToolUtils;
 import org.springframework.ai.tool.ToolCallback;
@@ -31,6 +32,7 @@ public class OpenApiMcp implements ToolCallbackProvider {
     private final Map<String, BiFunction<Object, ToolContext, Object>> toolMap =
             new LinkedHashMap<>();
     private final Map<String, String> inputSchemaMap = new HashMap<>();
+    private final Map<String, String> descriptionMap = new HashMap<>();
 
     private final RestClient restClient;
 
@@ -46,7 +48,13 @@ public class OpenApiMcp implements ToolCallbackProvider {
     }
 
     private void loadOpenApi(String openApiSpecPath) {
-        try (InputStream inputStream = getClass().getResourceAsStream(openApiSpecPath)) {
+        // ClassLoader.getResourceAsStream no admite el prefijo '/', por lo que se
+        // normaliza la ruta para aceptar tanto "/openapi.yaml" como "openapi.yaml".
+        String resourcePath = openApiSpecPath.startsWith("/")
+                ? openApiSpecPath.substring(1)
+                : openApiSpecPath;
+
+        try (InputStream inputStream = OpenApiMcp.class.getClassLoader().getResourceAsStream(resourcePath)) {
 
             if (inputStream == null) {
                 throw new IllegalArgumentException(
@@ -80,11 +88,14 @@ public class OpenApiMcp implements ToolCallbackProvider {
                             return;
                         }
 
-                        String operationId = operation.getOperationId();
+                        val operationId = operation.getOperationId();
+                        val description = operation.getDescription() != null ? operation.getDescription() : "";
 
                         if (operationId == null || operationId.isBlank()) {
                             return;
                         }
+
+                        descriptionMap.put(operationId, description);
 
                         List<Parameter> parameters = operation.getParameters() != null
                                 ? operation.getParameters()
@@ -188,9 +199,14 @@ public class OpenApiMcp implements ToolCallbackProvider {
                             getDefaultInputSchema()
                     );
 
+                    String toolDescription = descriptionMap.getOrDefault(
+                            operationId,
+                            ""
+                    );
+
                     ToolDefinition definition = ToolDefinition.builder()
                             .name(operationId)
-                            .description("Tool generated from OpenAPI spec")
+                            .description(toolDescription)
                             .inputSchema(schema)
                             .build();
 

@@ -22,8 +22,8 @@ public interface CampaignDtoMapper {
     @Mapping(target = "page", source = "number")
     @Mapping(target = "totalPages", source = "totalPages")
     @Mapping(target = "totalElements", source = "totalElements")
-    @Mapping(target = "content", source = "content")
-    PaginatedDto toDto(Page<CampaignModel> campaign);
+    @Mapping(target = "content", expression = "java(mapCampaigns(page.getContent()))")
+    PaginatedDto toDto(Page<CampaignModel> page);
 
 
     @Mapping(target = "id", ignore = true)
@@ -50,5 +50,12 @@ public interface CampaignDtoMapper {
     @Mapping(target = "campaign", source = "campaign")
     @Mapping(target = "playerClass", source = "playerClass")
     CampaignPlayerClassDto toCampaignPlayerClassDto(CampaignPlayerClassModel playerClassForCampaign);
+
+    default List<PaginatedDtoContentInner> mapCampaigns(List<CampaignModel> campaignModels) {
+        return campaignModels.stream()
+                .map(this::toDto)
+                .map(dto -> (PaginatedDtoContentInner) dto)
+                .toList();
+    }
 
 }
