@@ -16,6 +16,8 @@ import java.util.Objects;
 @Mapper(componentModel = "spring", uses = {RaceDtoMapper.class, PlayerClassDtoMapper.class}, nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface CampaignDtoMapper {
 
+    @Mapping(target = "fileStoreUrl", source = "campaign.fileStore.url")
+    @Mapping(target = "description", source = "campaign.campaignDescription")
     @Mapping(target = "lastUpdate", expression = "java(resolveLastUpdate(campaign, xApiVersion))")
     @Mapping(target = "lastUpdater", expression = "java(resolveLastUpdater(campaign, xApiVersion))")
     CampaignDto toDto(CampaignModel campaign, String xApiVersion);
