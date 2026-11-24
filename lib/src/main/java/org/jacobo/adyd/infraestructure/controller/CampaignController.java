@@ -49,7 +49,7 @@ public class CampaignController implements CampaignControllerApi {
                     .campaignDescription(description)
                     .campaignImage(campaignImage == null ? null : campaignImage.getResource())
                     .build();
-            return ResponseEntity.accepted().body(campaignMapper.toDto(campaignService.update(model),xAPIVersion));
+            return ResponseEntity.accepted().body(campaignMapper.toDto(campaignService.update(model), xAPIVersion));
         } catch (java.io.IOException e) {
             throw new RuntimeException(e);
         }

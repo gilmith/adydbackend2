@@ -14,6 +14,7 @@ paths:
       - $ref: '#/components/parameters/XApiVersion'
     get:
       summary: Get all campaigns
+      description: "Obtiene todas las campañas de Dragones y Mazmorras disponibles (ej: Forgotten Realms, Eberron, Dragonlance) con paginación y ordenamiento"
       operationId: getAllCampaign
       tags:
         - campaign-controller
@@ -23,7 +24,7 @@ paths:
         - $ref: '#/components/parameters/sort'
       responses:
         200:
-          description: OK
+          description: Lista paginada de campañas D&D con información de última actualización
           content:
             application/json:
               schema:
@@ -126,6 +127,7 @@ paths:
       - $ref: '#/components/parameters/XApiVersion'
     get:
       summary: get all available races for campaign
+      description: "Obtiene todas las razas de Dragones y Mazmorras disponibles para una campaña específica (ej: Humano, Enano, Elfo para Forgotten Realms)"
       operationId: getRaceByCampaignId
       tags:
         - campaign-controller
@@ -133,7 +135,7 @@ paths:
         - $ref: '#/components/parameters/campaignId'
       responses:
         200:
-          description: ok
+          description: Lista de razas D&D disponibles para la campaña
           content:
             application/json:
               schema:
@@ -143,6 +145,7 @@ paths:
       - $ref: '#/components/parameters/XApiVersion'
     get:
       summary: get all available player classes for campaign
+      description: "Obtiene todas las clases de personaje de Dragones y Mazmorras disponibles para una campaña específica (ej: Guerrero, Mago, Clérigo para Forgotten Realms)"
       operationId: getPlayerClassForCampaign
       tags:
         - campaign-controller
@@ -150,7 +153,7 @@ paths:
         - $ref: '#/components/parameters/campaignId'
       responses:
         200:
-          description: ok
+          description: Lista de clases de personaje D&D disponibles para la campaña
           content:
             application/json:
               schema:
@@ -235,6 +238,7 @@ paths:
       - $ref: '#/components/parameters/XApiVersion'
     get:
       summary: get all races
+      description: "Obtiene todas las razas de Dragones y Mazmorras disponibles (ej: Humano, Enano, Elfo, Tiefling, Dragonborn, Half-Orc) con paginación"
       operationId: getAllRaces
       parameters:
         - $ref: '#/components/parameters/page'
@@ -244,7 +248,7 @@ paths:
         - race-controller
       responses:
         200:
-          description: OK
+          description: Lista paginada de razas D&D con sus características
           content:
             application/json:
               schema:
@@ -698,6 +702,7 @@ components:
           format: int64
         name:
           type: string
+          description: "Nombre de la raza en Dragones y Mazmorras (ej: Humano, Enano, Elfo, Tiefling, Dragonborn)"
     CreateCampaignDto:
       type: object
       required:
@@ -712,23 +717,18 @@ components:
       required:
         - name
         - id
-      x-spring-annotations:
-        - '@JsonInclude(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL)'
       properties:
         id:
           type: integer
           format: int64
         name:
           type: string
+          description: "Nombre de la campaña de Dragones y Mazmorras (ej: Forgotten Realms, Eberron, Dragonlance)"
         fileStoreUrl:
           type: string
         description:
           type: string
-        lastUpdate:
-          type: string
-          format: date-time
-        lastUpdater:
-          type: string
+          description: Descripción detallada de la campaña con escenario, lore y reglas específicas de D&D
     CampaignRaceDto:
       type: object
       required:
