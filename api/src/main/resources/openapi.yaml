@@ -729,6 +729,11 @@ components:
         description:
           type: string
           description: Descripción detallada de la campaña con escenario, lore y reglas específicas de D&D
+        lastUpdate:
+          type: string
+          format: date-time
+        lastUpdater:
+          type: string
     CampaignRaceDto:
       type: object
       required:
