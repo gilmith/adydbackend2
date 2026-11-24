@@ -10,20 +10,52 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.springframework.data.domain.Page;
 
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Mapper(componentModel = "spring", uses = {RaceDtoMapper.class, PlayerClassDtoMapper.class}, nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface CampaignDtoMapper {
 
-    @Mapping(target = "fileStoreUrl", source = "fileStore.url")
-    @Mapping(target = "description", source = "campaignDescription")
-    CampaignDto toDto(CampaignModel campaign);
+    @Mapping(target = "lastUpdate", expression = "java(resolveLastUpdate(campaign, xApiVersion))")
+    @Mapping(target = "lastUpdater", expression = "java(resolveLastUpdater(campaign, xApiVersion))")
+    CampaignDto toDto(CampaignModel campaign, String xApiVersion);
 
-    @Mapping(target = "page", source = "number")
-    @Mapping(target = "totalPages", source = "totalPages")
-    @Mapping(target = "totalElements", source = "totalElements")
-    @Mapping(target = "content", expression = "java(mapCampaigns(page.getContent()))")
-    PaginatedDto toDto(Page<CampaignModel> page);
+    default LocalDateTime resolveLastUpdate(CampaignModel campaignModel, String xApiVersion) {
+        if(xApiVersion.equals("2.0")) {
+            if (Objects.nonNull(campaignModel.getUpdateDate()) && campaignModel.getUpdateDate().isAfter(campaignModel.getCreateDate())) {
+                return campaignModel.getUpdateDate();
+            }
+            return campaignModel.getCreateDate();
+        }
+        return null;
+    }
+
+    default String resolveLastUpdater(CampaignModel campaignModel, String xApiVersion) {
+        if(xApiVersion.equals("2.0")) {
+            if (Objects.nonNull(campaignModel.getUpdateDate()) && campaignModel.getUpdateDate().isAfter(campaignModel.getCreateDate())) {
+                return campaignModel.getUpdateUser();
+            }
+            return campaignModel.getCreateUser();
+        }
+        return null;
+    }
+
+
+    @Mapping(target = "page", source = "campaign.number")
+    @Mapping(target = "totalPages", source = "campaign.totalPages")
+    @Mapping(target = "totalElements", source = "campaign.totalElements")
+    @Mapping(target = "content", expression = "java(mapContent(campaign.getContent(), xApiVersion))")
+    PaginatedDto toDto(Page<CampaignModel> campaign, String xApiVersion);
+
+    default java.util.List<PaginatedDtoContentInner> mapContent(
+            java.util.List<CampaignModel> content, String xApiVersion) {
+        if (content == null) {
+            return null;
+        }
+        return content.stream()
+                .map(item -> (PaginatedDtoContentInner) toDto(item, xApiVersion))
+                .toList();
+    }
 
 
     @Mapping(target = "id", ignore = true)
@@ -50,12 +82,5 @@ public interface CampaignDtoMapper {
     @Mapping(target = "campaign", source = "campaign")
     @Mapping(target = "playerClass", source = "playerClass")
     CampaignPlayerClassDto toCampaignPlayerClassDto(CampaignPlayerClassModel playerClassForCampaign);
-
-    default List<PaginatedDtoContentInner> mapCampaigns(List<CampaignModel> campaignModels) {
-        return campaignModels.stream()
-                .map(this::toDto)
-                .map(dto -> (PaginatedDtoContentInner) dto)
-                .toList();
-    }
 
 }
