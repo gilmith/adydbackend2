@@ -41,11 +41,11 @@ jobs:
       # 3. Ajustar dinámicamente la versión en el pom.xml con la versión del Tag
       - name: Update POM Version
         run: |
-          mvn versions:set -DnewVersion=${{ steps.get_version.outputs.VERSION }} -DgenerateBackupPoms=false
+          mvn versions:set -DnewVersion=${{ steps.get_version.outputs.VERSION }} -DprocessAllModules=true -DgenerateBackupPoms=false
 
       # 4. Compilar, empaquetar y publicar en GitHub Packages
       - name: Build and Deploy to GitHub Packages
-        run: mvn clean deploy -DskipTests=false --settings ${{ github.workspace }}/settings.xml
+        run: mvn clean deploy -DskipTests=false -Ddocker.skip=true --settings ${{ github.workspace }}/settings.xml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -60,7 +60,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            target/*.jar
+            app/target/*.jar
             client-angular-${{ steps.get_version.outputs.VERSION }}.tar.gz
           tag_name: ${{ github.ref_name }}
           name: Release ${{ github.ref_name }}
